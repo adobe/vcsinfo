@@ -11,7 +11,8 @@ try:
     import P4
 except ImportError:
     raise vcsinfo.VCSUnsupported(
-        "Perforce VCS module requires perforce-p4python"
+        "Perforce VCS module requires the P4Python library to be installed. "
+        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details."
     )
 
 
