@@ -45,9 +45,9 @@ def last_mtime(files, prefix=None):
 
         # NOTE: If the file doesn't exist then return 0, but then make sure a
         # 0 result gets mapped back to None.
-        mtime = max(map(lambda fn:
+        mtime = int(max(map(lambda fn:
                         os.path.exists(fn) and os.stat(fn).st_mtime or 0,
-                        xlate_files)) or None
+                        xlate_files))) or None
 
     return mtime
 
@@ -293,3 +293,40 @@ def detect_vcs(directory, *args, **argv):
         )
 
     return possible_vcs[0]
+
+
+try:
+    import setuptools.command.egg_info
+
+    class VCSInfoEggInfo(setuptools.command.egg_info.egg_info):
+        """
+        Override the egg_info command to appropriately set build tags.
+        """
+
+        command_name = 'egg_info'
+
+        def tags(self):
+            sourcedir = os.path.dirname(
+                os.path.abspath(self.distribution.script_name)
+            )
+            print "SOURCEDIR:", sourcedir
+
+            # see if we can get vcs information. if not fall back to egg_info
+            # defaults. in a source distribution the tag should already be in
+            # the PKG-INFO version.
+            vcs = None
+            try:
+                vcs = detect_vcs(sourcedir)
+                tag_build = '.%s' % vcs.number
+                if vcs.modified > 0:
+                    tag_build = '%s.%s' % (tag_build, vcs.modified)
+                return tag_build
+            except Exception as e:
+                pass
+
+            print "CALLING SUPER!!!"
+            return setuptools.command.egg_info.egg_info.tags(self)
+
+
+except ImportError:
+    pass
