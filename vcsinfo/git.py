@@ -23,7 +23,7 @@ class VCSGit(vcsinfo.VCS):
         'M' : vcsinfo.ST_MOD,
         'A' : vcsinfo.ST_ADD,
         'D' : vcsinfo.ST_REM,
-        # FIXME - don't know how the below maps
+        # don't know how the below maps
         #'' : vcsinfo.ST_DEL,
         #'' : vcsinfo.ST_UNK,
         #'' : vcsinfo.ST_IGN,
@@ -33,32 +33,21 @@ class VCSGit(vcsinfo.VCS):
 
     def __init__(self, directory):
         """Constructor"""
-        vcsinfo.VCS.__init__(self, directory)
+        vcsinfo.VCS.__init__(self)
         try:
             self.vcs_obj = git.Repo(directory)
         except git.exc.InvalidGitRepositoryError:
-            raise TypeError("Source tree '%s' not managed by %s" % (
+            raise TypeError("Directory '%s' not managed by %s" % (
                 directory,
                 self.vcs,
             ))
         try:
             self.source_root = self.vcs_obj.working_tree_dir
-        except AssertionError as exc:
-            raise TypeError("Source tree '%s' not a working %s checkout" % (
+        except AssertionError:
+            raise TypeError("Directory '%s' not a working %s checkout" % (
                 directory,
                 self.vcs,
             ))
-
-
-    def detect_source_root(self, directory):
-        """
-        This looks for a '.git' directory in directory and any parent
-        directories.
-        """
-        self.repo_dir = vcsinfo.search_parent_dirs(directory, '.git')
-        if not self.repo_dir:
-            raise TypeError("Directory '%s' is not managed by git" % directory)
-        self.source_root = os.path.dirname(self.repo_dir)
 
 
     @property
@@ -83,6 +72,7 @@ class VCSGit(vcsinfo.VCS):
 
 
     @property
+    #pylint: disable=R0912
     def branch(self):
         found_branch = None
 
@@ -100,6 +90,7 @@ class VCSGit(vcsinfo.VCS):
                     branches[branch.name] = branch
 
             def set_branch_info(branch, git_obj):
+                """registers a commit"""
                 if commits.has_key(git_obj.hexsha):
                     return False
                 commits[git_obj.hexsha] = {
@@ -108,7 +99,9 @@ class VCSGit(vcsinfo.VCS):
                     }
                 return True
 
-            class _Branch_discovery_done(Exception): pass
+            class BranchDiscoveryDone(Exception):
+                """Error signifying end of branch discovery."""
+                pass
 
             try:
                 # Prime commit with 'master' branch first
@@ -124,7 +117,7 @@ class VCSGit(vcsinfo.VCS):
                     for git_obj in branch.object.iter_parents():
                         if git_obj.hexsha == self.vcs_obj.head.object.hexsha:
                             found_branch = branch.name
-                            raise _Branch_discovery_done()
+                            raise BranchDiscoveryDone()
                         if not set_branch_info(branch.name, git_obj):
                             # This object is already on another branch
                             break
@@ -132,7 +125,7 @@ class VCSGit(vcsinfo.VCS):
                             # Cannot follow branch name through a merge
                             break
 
-            except _Branch_discovery_done, e:
+            except BranchDiscoveryDone:
                 pass
 
         return found_branch
@@ -142,7 +135,9 @@ class VCSGit(vcsinfo.VCS):
     def user(self):
         user = ''
         if self.vcs_obj.heads:
-            user = self.vcs_obj.rev_parse(self.vcs_obj.head.name).committer.email
+            user = self.vcs_obj.rev_parse(
+                self.vcs_obj.head.name
+            ).committer.email
         return user.replace('@adobe.com', '')
 
 
@@ -201,7 +196,7 @@ class VCSGit(vcsinfo.VCS):
                         "Internal error: commit %s not on commit's branch %s"
                             % (commit_id, branch_name)
                     )
-        except TypeError, e:
+        except TypeError:
             pass
 
         return number
@@ -244,9 +239,6 @@ class VCSGit(vcsinfo.VCS):
             )
         vcs_files.sort()
         return vcs_files
-
-
-    pass
 
 
 VCS = VCSGit
