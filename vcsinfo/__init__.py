@@ -8,6 +8,7 @@ import sys
 
 
 class VCSUnsupported(Exception):
+    """Custom error signifying a specific VCS is not supported"""
     pass
 
 
@@ -39,15 +40,15 @@ def last_mtime(files, prefix=None):
 
     if files:
         if prefix:
-            xlate_files = map(lambda f: os.path.sep.join((prefix, f)), files)
+            _files = [os.path.join(prefix, f) for f in files]
         else:
-            xlate_files = files
+            _files = files
 
         # NOTE: If the file doesn't exist then return 0, but then make sure a
         # 0 result gets mapped back to None.
-        mtime = int(max(map(lambda fn:
-                        os.path.exists(fn) and os.stat(fn).st_mtime or 0,
-                        xlate_files))) or None
+        mtime = int(max([
+            os.path.exists(fn) and os.stat(fn).st_mtime or 0 for fn in _files
+        ])) or None
 
     return mtime
 
@@ -61,11 +62,12 @@ ST_IGN = 5
 ST_CLN = 6
 
 
+#pylint: disable=R0921
 class VCS(object):
     """Base class for a source tree managed by VCS"""
 
 
-    def __init__(self, directory, init=False):
+    def __init__(self):
         """Base constructor"""
         # Automatically set the VCS engine name
         self.vcs = self.__class__.__name__
@@ -90,18 +92,21 @@ class VCS(object):
 
 
     @property
+    #pylint: disable=R0201
     def branch(self):
         """The branch name."""
         return None
 
 
     @property
+    #pylint: disable=R0201
     def id(self):
         """The native commit identification."""
         return None
 
 
     @property
+    #pylint: disable=R0201
     def user(self):
         """The user who performed the commit (if applicable)."""
         return 'n/a'
@@ -164,9 +169,13 @@ class VCS(object):
 
     @property
     def id_string(self):
+        """
+        String providing a unique id of the branch and release.
+        """
         return str(self.branch) + "-" + str(self.release)
 
 
+    #pylint: disable=R0201
     def status(self):
         """
         Returns a tuple of lists of modified files in the changeset:
@@ -191,6 +200,7 @@ class VCS(object):
         raise NotImplementedError(
             "VCS module %s must implement %s()" % (
                 self.vcs,
+                #pylint: disable=W0212
                 sys._getframe(1).f_code.co_name,
             )
         )
@@ -261,7 +271,7 @@ def detect_vcs(directory, *args, **argv):
 
     errors = []
     for modpath in vcs_files:
-        modname, ext = os.path.splitext(os.path.basename(modpath))
+        modname, _ = os.path.splitext(os.path.basename(modpath))
         # skip things like '__init__.py'
         if modname.startswith('_'):
             continue
@@ -281,14 +291,14 @@ def detect_vcs(directory, *args, **argv):
 
     if not possible_vcs:
         for error in errors:
-            print >>sys.stderr, "ERROR:", error
+            print >> sys.stderr, "ERROR:", error
         raise VCSUnsupported((
             "No recognized VCS management of source tree '%s' - "
             "do you need to login to a VCS?" % directory
         ))
 
     if 1 < len(possible_vcs):
-        print >>sys.stderr, "WARNING: multiple VCS matches: %s" % (
+        print >> sys.stderr, "WARNING: multiple VCS matches: %s" % (
             ', '.join([ vcs.vcs for vcs in possible_vcs ]),
         )
 
@@ -298,6 +308,7 @@ def detect_vcs(directory, *args, **argv):
 try:
     import setuptools.command.egg_info
 
+    #pyline: disable=R0904
     class VCSInfoEggInfo(setuptools.command.egg_info.egg_info):
         """
         Override the egg_info command to appropriately set build tags.
@@ -321,7 +332,9 @@ try:
                 if vcs.modified > 0:
                     tag_build = '%s.%s' % (tag_build, vcs.modified)
                 return tag_build
-            except Exception as e:
+            except TypeError:
+                pass
+            except VCSUnsupported:
                 pass
 
             print "CALLING SUPER!!!"

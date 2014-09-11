@@ -12,6 +12,7 @@ try:
 except ImportError:
     raise vcsinfo.VCSUnsupported(
         "Perforce VCS module requires the P4Python library to be installed. "
+        #pylint: disable=C0301
         "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details."
     )
 
@@ -30,7 +31,7 @@ class VCSPerforce(vcsinfo.VCS):
         'move/add'    : vcsinfo.ST_ADD,
         'delete'      : vcsinfo.ST_REM,
         'move/delete' : vcsinfo.ST_REM,
-        # FIXME - don't know how the below maps
+        # don't know how the below maps
         #''      : vcsinfo.ST_DEL,
         #''      : vcsinfo.ST_UNK,
         #''      : vcsinfo.ST_IGN,
@@ -45,7 +46,7 @@ class VCSPerforce(vcsinfo.VCS):
         branches_path='branches',
     ):
         """Constructor"""
-        vcsinfo.VCS.__init__(self, directory)
+        vcsinfo.VCS.__init__(self)
         self._development_path_id = development_path
         self._branches_path_id = branches_path
         self._depot_root = ''
@@ -68,6 +69,9 @@ class VCSPerforce(vcsinfo.VCS):
 
 
     def detect_source_root(self, directory):
+        """
+        Traverse directories to find the perforce source root.
+        """
         vcs_obj = None
         try:
             real_directory = os.path.realpath(directory)
@@ -169,6 +173,7 @@ class VCSPerforce(vcsinfo.VCS):
 
 
     def classify_status(self, info_list, status_func):
+        """Sort files into status lists."""
         status = ([], [], [], [], [], [], [])
 
         for info in info_list:
@@ -237,9 +242,6 @@ class VCSPerforce(vcsinfo.VCS):
         source_tree_files.sort()
 
         return source_tree_files
-
-
-    pass
 
 
 VCS = VCSPerforce

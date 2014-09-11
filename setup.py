@@ -4,6 +4,7 @@ Copyright (C) 2014 Adobe
 from setuptools import setup, find_packages
 import vcsinfo
 
+#pylint: disable=C0301
 setup(
     name='vcsinfo',
     version='0.1',
