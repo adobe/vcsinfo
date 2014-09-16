@@ -194,7 +194,7 @@ class VCSGit(vcsinfo.VCS):
                     # is located - unpossible!
                     raise Exception(
                         "Internal error: commit %s not on commit's branch %s"
-                            % (commit_id, branch_name)
+                        % (commit_id, branch_name)
                     )
         except TypeError:
             pass
