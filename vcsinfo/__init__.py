@@ -320,7 +320,6 @@ try:
             sourcedir = os.path.dirname(
                 os.path.abspath(self.distribution.script_name)
             )
-            print "SOURCEDIR:", sourcedir
 
             # see if we can get vcs information. if not fall back to egg_info
             # defaults. in a source distribution the tag should already be in
@@ -337,7 +336,6 @@ try:
             except VCSUnsupported:
                 pass
 
-            print "CALLING SUPER!!!"
             return setuptools.command.egg_info.egg_info.tags(self)
 
 
