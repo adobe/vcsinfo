@@ -1,7 +1,7 @@
 """
 Copyright (C) 2014 Adobe
 """
-
+import ConfigParser
 import glob
 import os
 import sys
@@ -290,12 +290,13 @@ def detect_vcs(directory, *args, **argv):
         return archive_vcs
 
     if not possible_vcs:
-        for error in errors:
-            print >> sys.stderr, "ERROR:", error
-        raise VCSUnsupported((
+        message = (
             "No recognized VCS management of source tree '%s' - "
             "do you need to login to a VCS?" % directory
-        ))
+        )
+        for error in errors:
+            message += "\tERROR: %s" % error
+        raise VCSUnsupported(message)
 
     if 1 < len(possible_vcs):
         print >> sys.stderr, "WARNING: multiple VCS matches: %s" % (
@@ -321,9 +322,7 @@ try:
                 os.path.abspath(self.distribution.script_name)
             )
 
-            # see if we can get vcs information. if not fall back to egg_info
-            # defaults. in a source distribution the tag should already be in
-            # the PKG-INFO version.
+            # first, see if we can get vcs information.
             vcs = None
             try:
                 vcs = detect_vcs(sourcedir)
@@ -336,6 +335,20 @@ try:
             except VCSUnsupported:
                 pass
 
+            # if not fall back to egg_info configuration in setup.cfg
+            setup_cfg_path = os.path.join(sourcedir, 'setup.cfg')
+            if os.path.exists(setup_cfg_path):
+                try:
+                    setup_cfg = ConfigParser.RawConfigParser()
+                    setup_cfg.read(setup_cfg_path)
+                    if setup_cfg.has_section('egg_info'):
+                        if setup_cfg.has_option('egg_info', 'tag_build'):
+                            return setup_cfg.get('egg_info', 'tag_build')
+                #pylint: disable=broad-except
+                except Exception:
+                    pass
+
+            # if we can't find anything just use the default routine
             return setuptools.command.egg_info.egg_info.tags(self)
 
 
