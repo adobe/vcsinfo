@@ -49,6 +49,13 @@ class VCSGit(vcsinfo.VCS):
                 self.vcs,
             ))
 
+        # make sure the git working tree is the same as our directory
+        if os.path.abspath(self.source_root) != os.path.abspath(directory):
+            raise TypeError(
+                "Directory '%s' is managed by %s, but is not "
+                "the root of the repository" % (directory, self.vcs)
+            )
+
 
     @property
     def upstream_repo(self):

@@ -335,20 +335,7 @@ try:
             except VCSUnsupported:
                 pass
 
-            # if not fall back to egg_info configuration in setup.cfg
-            setup_cfg_path = os.path.join(sourcedir, 'setup.cfg')
-            if os.path.exists(setup_cfg_path):
-                try:
-                    setup_cfg = ConfigParser.RawConfigParser()
-                    setup_cfg.read(setup_cfg_path)
-                    if setup_cfg.has_section('egg_info'):
-                        if setup_cfg.has_option('egg_info', 'tag_build'):
-                            return setup_cfg.get('egg_info', 'tag_build')
-                #pylint: disable=broad-except
-                except Exception:
-                    pass
-
-            # if we can't find anything just use the default routine
+            # if not fall back to the default routine
             return setuptools.command.egg_info.egg_info.tags(self)
 
 
