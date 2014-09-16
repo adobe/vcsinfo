@@ -267,7 +267,7 @@ def detect_vcs(directory, *args, **argv):
     # and list archive.py last.
     vcs_files = glob.glob(os.path.join(vcs_dir, '*.py'))
     possible_vcs = []
-    archive_vcs  = None
+    archive_vcs = None
 
     errors = []
     for modpath in vcs_files:
@@ -299,7 +299,7 @@ def detect_vcs(directory, *args, **argv):
 
     if 1 < len(possible_vcs):
         print >> sys.stderr, "WARNING: multiple VCS matches: %s" % (
-            ', '.join([ vcs.vcs for vcs in possible_vcs ]),
+            ', '.join([vcs.vcs for vcs in possible_vcs]),
         )
 
     return possible_vcs[0]
