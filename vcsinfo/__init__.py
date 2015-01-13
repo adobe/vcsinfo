@@ -295,7 +295,7 @@ def detect_vcs(directory, *args, **argv):
             "do you need to login to a VCS?" % directory
         )
         for error in errors:
-            message += "\tERROR: %s" % error
+            message += "\n\tERROR: %s" % error
         raise VCSUnsupported(message)
 
     if 1 < len(possible_vcs):

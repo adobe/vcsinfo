@@ -7,7 +7,7 @@ import vcsinfo
 #pylint: disable=C0301
 setup(
     name='vcsinfo',
-    version='0.1',
+    version='0.1.13',
     author='***REMOVED***',
     author_email="***REMOVED***",
     license="Adobe",
