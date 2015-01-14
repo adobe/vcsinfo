@@ -7,12 +7,11 @@ import vcsinfo
 
 try:
     from mercurial import (
-        commands,
         hg,
         ui,
         )
-except ImportError, e:
-    raise vcsinfo.DMS_vcs_unsupported("Mercurial VCS module requires mercurial")
+except ImportError:
+    raise vcsinfo.VCSUnsupported("Mercurial VCS module requires mercurial")
 
 
 class VCSHg(vcsinfo.VCS):
@@ -29,6 +28,7 @@ class VCSHg(vcsinfo.VCS):
 
 
     def detect_source_root(self, dirname):
+        """Find the top-most source directory"""
         repo_dir = vcsinfo.search_parent_dirs(dirname, '.hg')
         if not repo_dir:
             raise TypeError("Directory '%s' is not managed by hg" % dirname)
@@ -48,8 +48,9 @@ class VCSHg(vcsinfo.VCS):
                 # There's an upstream - use the basename for the name
                 path = self.vcs_obj.ui.config('paths', 'default')
             else:
-                # No upstream - the directory is the repo - use the directory basename
-                # (without "dot" extensions) as the name.
+                # No upstream - the directory is the repo - use the
+                # directory basename (without "dot" extensions) as
+                # the name.
                 path = self.source_root
             self._name = os.path.splitext(os.path.basename(path))[0]
         return self._name
@@ -81,12 +82,13 @@ class VCSHg(vcsinfo.VCS):
 
     def list_files(self):
         status = self.status()
-        vcs_files = list(set(status[vcsinfo.ST_CLN]) | set(status[vcsinfo.ST_ADD]) | set(status[vcsinfo.ST_MOD]))
+        vcs_files = list(
+            set(status[vcsinfo.ST_CLN])
+            | set(status[vcsinfo.ST_ADD])
+            | set(status[vcsinfo.ST_MOD])
+        )
         vcs_files.sort()
         return vcs_files
-
-
-    pass
 
 
 VCS = VCSHg
