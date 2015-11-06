@@ -43,6 +43,10 @@ class VCSGit(vcsinfo.VCS):
             ))
         try:
             self.source_root = self.vcs_obj.working_tree_dir
+            # The above may or may not raise an AssertionError
+            if not self.source_root:
+                # Here is another reason to raise an AssertionError
+                raise AssertionError("No git working_tree_dir")
         except AssertionError:
             raise TypeError("Directory '%s' not a working %s checkout" % (
                 directory,
