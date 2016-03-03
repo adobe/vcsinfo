@@ -85,7 +85,7 @@ class VCSGit(vcsinfo.VCS):
     @property
     #pylint: disable=R0912
     def branch(self):
-        found_branch = None
+        found_branch = 'DETATCHED'
 
         try:
             found_branch = self.vcs_obj.active_branch.name
@@ -158,10 +158,7 @@ class VCSGit(vcsinfo.VCS):
 
     @property
     def id(self):
-        idn = '0'
-        if self.vcs_obj.heads:
-            idn = self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
-        return idn
+        return self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
 
 
     @property
