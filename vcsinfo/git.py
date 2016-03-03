@@ -117,6 +117,10 @@ class VCSGit(vcsinfo.VCS):
             try:
                 # Prime commit with 'master' branch first
                 for branch in [master_branch] + branches.values():
+                    # If the branch is None continue (if we didn't find a
+                    # master branch, for instance)
+                    if not branch:
+                        continue
                     # The reference isn't at the head of a branch else it
                     # would be .active_branch.name
                     if not set_branch_info(branch.name, branch.object):
