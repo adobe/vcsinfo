@@ -85,7 +85,7 @@ class VCSGit(vcsinfo.VCS):
     @property
     #pylint: disable=R0912
     def branch(self):
-        found_branch = 'DETATCHED'
+        found_branch = 'DETACHED'
 
         try:
             found_branch = self.vcs_obj.active_branch.name
@@ -95,7 +95,7 @@ class VCSGit(vcsinfo.VCS):
             master_branch = None
 
             for branch in self.vcs_obj.branches:
-                if 'master' == branch.name:
+                if branch.name == 'master':
                     master_branch = branch
                 else:
                     branches[branch.name] = branch
@@ -127,7 +127,7 @@ class VCSGit(vcsinfo.VCS):
                         # This object is already on another branch
                         continue
                     # Cannot follow branch name through a merge
-                    if 1 < len(branch.object.parents):
+                    if len(branch.object.parents) > 1:
                         continue
                     for git_obj in branch.object.iter_parents():
                         if git_obj.hexsha == self.vcs_obj.head.object.hexsha:
@@ -136,7 +136,7 @@ class VCSGit(vcsinfo.VCS):
                         if not set_branch_info(branch.name, git_obj):
                             # This object is already on another branch
                             break
-                        if 1 < len(git_obj.parents):
+                        if len(git_obj.parents) > 1:
                             # Cannot follow branch name through a merge
                             break
 
@@ -235,7 +235,7 @@ class VCSGit(vcsinfo.VCS):
         clean_files -= set(status[vcsinfo.ST_MOD])
         clean_files -= set(status[vcsinfo.ST_ADD])
         clean_files -= set(status[vcsinfo.ST_REM])
-        clean_files = list(clean_files)
+        clean_files = list(clean_files) #pylint: disable=redefined-variable-type
         clean_files.sort()
         status[vcsinfo.ST_CLN] = clean_files
 
