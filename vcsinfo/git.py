@@ -183,7 +183,10 @@ class VCSGit(vcsinfo.VCS):
         commit_id = self.id
         branch_name = self.branch
         try:
-            branch = getattr(self.vcs_obj.branches, branch_name)
+            if hasattr(self.vcs_obj.branches, branch_name):
+                branch = getattr(self.vcs_obj.branches, branch_name)
+            else:
+                branch = self.vcs_obj.head
             # The below "sum(1 . . .)" counts the "length" of the
             # iter_parents() generator - so branch_count is the tree height
             # of the branch object (which is a HEAD).
