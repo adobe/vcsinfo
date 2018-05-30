@@ -9,8 +9,8 @@ import vcsinfo
 
 try:
     import git
-except ImportError:
-    raise vcsinfo.VCSUnsupported("GIT VCS module requires GitPython")
+except ImportError as err:
+    raise vcsinfo.VCSUnsupported("GIT VCS module requires GitPython: {0}".format(err))
 
 
 class VCSGit(vcsinfo.VCS):
