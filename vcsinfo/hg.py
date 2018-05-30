@@ -10,8 +10,8 @@ try:
         hg,
         ui,
         )
-except ImportError:
-    raise vcsinfo.VCSUnsupported("Mercurial VCS module requires mercurial")
+except ImportError as err:
+    raise vcsinfo.VCSUnsupported("Mercurial VCS module requires mercurial: {0}".format(err))
 
 
 class VCSHg(vcsinfo.VCS):

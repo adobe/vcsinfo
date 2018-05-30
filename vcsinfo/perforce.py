@@ -9,11 +9,11 @@ import vcsinfo
 
 try:
     import P4
-except ImportError:
+except ImportError as err:
     raise vcsinfo.VCSUnsupported(
         "Perforce VCS module requires the P4Python library to be installed. "
         #pylint: disable=C0301
-        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details."
+        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {0}".format(err)
     )
 
 
