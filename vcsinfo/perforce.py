@@ -107,7 +107,7 @@ class VCSPerforce(vcsinfo.VCS):
             self.source_root = '/'.join(path_dirs[:pop_idx])
             self._depot_root = '/'.join(depot_path_dirs[:pop_idx])
 
-        except P4.P4Exception, exc:
+        except P4.P4Exception as exc:
             raise TypeError("Directory '%s' is not managed by p4: %s" % (
                 real_directory,
                 exc,
