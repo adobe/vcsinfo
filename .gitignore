@@ -10,3 +10,4 @@ build
 deb_dist
 dist
 vendor
+.*sw*

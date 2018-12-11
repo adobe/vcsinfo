@@ -1,7 +1,12 @@
 """
 Copyright (C) 2014 Adobe
 """
-import ConfigParser
+
+try:
+    import configparser as ConfigParser
+except ImportError:
+    import ConfigParser as ConfigParser
+
 import glob
 import os
 import sys
