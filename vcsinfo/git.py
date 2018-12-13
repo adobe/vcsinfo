@@ -63,11 +63,14 @@ class VCSGit(vcsinfo.VCS):
 
     @property
     def upstream_repo(self):
-        """The location of the up-stream VCS repository."""
+        """The location of the upstream VCS repository."""
         try:
-            return self.vcs_obj.remotes.origin.url
+            return self.vcs_obj.remotes.upstream.url
         except AttributeError:
-            return None
+            try:
+                return self.vcs_obj.remotes.origin.url
+            except AttributeError:
+                return None
 
 
     @property
