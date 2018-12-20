@@ -2,10 +2,10 @@
 Copyright (C) 2014 Adobe
 """
 
-try:
-    import configparser as ConfigParser
-except ImportError:
-    import ConfigParser as ConfigParser
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import glob
 import os
@@ -300,12 +300,15 @@ def detect_vcs(directory, *args, **argv):
             "do you need to login to a VCS?" % directory
         )
         for error in errors:
-            message += "\n\tERROR: %s" % error
+            message += "\n\tWARNING: %s" % error
         raise VCSUnsupported(message)
 
     if 1 < len(possible_vcs):
-        print >> sys.stderr, "WARNING: multiple VCS matches: %s" % (
-            ', '.join([vcs.vcs for vcs in possible_vcs]),
+        print(
+            'WARNING: multiple VCS matches: {}'.format(
+                ', '.join([vcs.vcs for vcs in possible_vcs]),
+            ),
+            file=sys.stderr,
         )
 
     return possible_vcs[0]

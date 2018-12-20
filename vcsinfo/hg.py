@@ -2,6 +2,8 @@
 Copyright (C) 2012-2013 Adobe
 """
 
+from __future__ import absolute_import
+
 import os
 import vcsinfo
 
@@ -24,7 +26,10 @@ class VCSHg(vcsinfo.VCS):
         hgui = ui.ui()
         self.detect_source_root(dirname)
 
-        self.vcs_obj = hg.repository(hgui, path=self.source_root, create=False)
+        try:
+            self.vcs_obj = hg.repository(hgui, path=self.source_root.encode('utf-8'), create=False)
+        except TypeError as exc:
+            raise TypeError('Unable to initialize Hg: {}'.format(exc))
 
 
     def detect_source_root(self, dirname):
@@ -38,15 +43,15 @@ class VCSHg(vcsinfo.VCS):
     @property
     def upstream_repo(self):
         """The location of the up-stream VCS repository."""
-        return self.vcs_obj.ui.config('paths', 'default')
+        return self.vcs_obj.ui.config(b'paths', b'default')
 
 
     @property
     def name(self):
         if not self._name:
-            if self.vcs_obj.ui.config('paths', 'default'):
+            if self.vcs_obj.ui.config(b'paths', b'default'):
                 # There's an upstream - use the basename for the name
-                path = self.vcs_obj.ui.config('paths', 'default')
+                path = self.vcs_obj.ui.config(b'paths', b'default').decode('ascii')
             else:
                 # No upstream - the directory is the repo - use the
                 # directory basename (without "dot" extensions) as
@@ -58,12 +63,12 @@ class VCSHg(vcsinfo.VCS):
 
     @property
     def branch(self):
-        return self.vcs_obj['.'].branch()
+        return self.vcs_obj[b'.'].branch()
 
 
     @property
     def id(self):
-        return self.vcs_obj['.'].hex()
+        return self.vcs_obj[b'.'].hex()
 
 
     @property
@@ -73,20 +78,24 @@ class VCSHg(vcsinfo.VCS):
 
     @property
     def number(self):
-        return int(self.vcs_obj['.'].rev())
+        return int(self.vcs_obj[b'.'].rev())
 
 
     def status(self):
-        return self.vcs_obj.status(ignored=True, clean=True, unknown=True)
+        files = self.vcs_obj.status(ignored=True, clean=True, unknown=True)
+        status = []
+        for fset in files:
+            status.append([f.decode('ascii') for f in fset])
+        return status
 
 
     def list_files(self):
         status = self.status()
-        vcs_files = list(
+        vcs_files = [f.decode('ascii') for f in
             set(status[vcsinfo.ST_CLN])
             | set(status[vcsinfo.ST_ADD])
             | set(status[vcsinfo.ST_MOD])
-        )
+        ]
         vcs_files.sort()
         return vcs_files
 
