@@ -20,7 +20,7 @@ setup(
         'bin/vcsinfo',
     ],
     install_requires=[
-        'GitPython==2.1.8',
+        'GitPython==2.1.15',
     ],
 
     # override the default egg_info class to enable setting the tag_build
