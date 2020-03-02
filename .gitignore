@@ -11,3 +11,4 @@ deb_dist
 dist
 vendor
 .*sw*
+buildrunner.results
