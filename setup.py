@@ -32,6 +32,14 @@ else:
         pass
 
 
+REQUIRES = []
+with open(os.path.join(THIS_DIR, 'requirements.txt')) as robj:
+    for line in robj.readlines():
+        _line = line.strip()
+        if _line and _line[0].isalpha():
+            REQUIRES.append(_line)
+
+
 #pylint: disable=C0301
 setup(
     name='vcsinfo',
@@ -47,10 +55,7 @@ setup(
     scripts=[
         'bin/vcsinfo',
     ],
-    install_requires=[
-        'GitPython==2.1.15',
-        'mercurial',
-    ],
+    install_requires=REQUIRES,
 
     # override the default egg_info class to enable setting the tag_build
     cmdclass={
