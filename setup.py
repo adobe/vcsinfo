@@ -8,15 +8,28 @@ import os
 
 VERSION='0.1'
 BUILD_NR = os.getenv('VCSINFO_NUMBER')
+THIS_DIR = os.path.dirname(__file__)
 if not BUILD_NR:
     try:
-        VCS = vcsinfo.detect_vcs(os.path.dirname(__file__))
+        VCS = vcsinfo.detect_vcs(THIS_DIR)
         if VCS and VCS.number:
             BUILD_NR = VCS.number
     except vcsinfo.VCSUnsupported:
         pass
+
 if BUILD_NR:
     VERSION = '{}.{}'.format(VERSION, BUILD_NR)
+else:
+    pipath = os.path.join(THIS_DIR, 'PKG-INFO')
+    try:
+        with open(pipath, 'r') as pi_obj:
+            for line in pi_obj.readlines():
+                key, value = line.strip().split(':', 1)
+                if key == 'Version':
+                    VERSION = value.strip()
+                    break
+    except IOError:
+        pass
 
 
 #pylint: disable=C0301
