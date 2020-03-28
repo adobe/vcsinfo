@@ -1,5 +1,5 @@
 """
-Copyright (C) 2014 Adobe
+Copyright (C) 2014-2020 Adobe
 """
 from setuptools import setup, find_packages
 import vcsinfo
@@ -32,12 +32,17 @@ else:
         pass
 
 
+REQ_FILE = 'requirements.txt'
 REQUIRES = []
-with open(os.path.join(THIS_DIR, 'requirements.txt')) as robj:
-    for line in robj.readlines():
-        _line = line.strip()
-        if _line and _line[0].isalpha():
-            REQUIRES.append(_line)
+try:
+    with open(os.path.join(THIS_DIR, REQ_FILE)) as robj:
+        for line in robj.readlines():
+            _line = line.strip()
+            if _line and _line[0].isalpha():
+                REQUIRES.append(_line)
+except IOError as err:
+    sys.stderr.write('Python build requirements must be specified in "{0}": {1}\n'.format(REQ_FILE, err))
+    os.exit(err.errno)
 
 
 #pylint: disable=C0301
