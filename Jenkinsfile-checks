@@ -1,0 +1,14 @@
+def prContext = githubUtils.getPRContext()
+
+// Add code review check
+checkUtils.runPRCheck(prContext, statusContext:'Code Review', numApprovers:1,
+	approvers:['github:dms-release-engineering/Approvers'], excludeSubmitter:true)
+
+// Merge automatically after all checks pass
+githubUtils.mergeAfterChecksPass(prContext)
+
+// Add issue status comment
+githubUtils.updateIssueStatusPRComment(prContext)
+
+// Always add PR links
+issueUtils.addPRLinks(prContext)

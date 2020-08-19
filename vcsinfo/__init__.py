@@ -2,11 +2,6 @@
 Copyright (C) 2014 Adobe
 """
 
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import glob
 import os
 import sys
@@ -14,7 +9,6 @@ import sys
 
 class VCSUnsupported(Exception):
     """Custom error signifying a specific VCS is not supported"""
-    pass
 
 
 def search_parent_dirs(directory, filename):
@@ -67,10 +61,8 @@ ST_IGN = 5
 ST_CLN = 6
 
 
-#pylint: disable=R0921
-class VCS(object):
+class VCS:
     """Base class for a source tree managed by VCS"""
-
 
     def __init__(self):
         """Base constructor"""
@@ -83,39 +75,33 @@ class VCS(object):
         self._name = ''
         self._upstream_repo = ''
 
-
     @property
     def upstream_repo(self):
         """The location of the up-stream VCS repository."""
         return self._upstream_repo
-
 
     @property
     def name(self):
         """The name of the VCS project."""
         return self._name
 
-
     @property
-    #pylint: disable=R0201
+    # pylint: disable=R0201
     def branch(self):
         """The branch name."""
         return None
 
-
     @property
-    #pylint: disable=R0201
+    # pylint: disable=R0201
     def id(self):
         """The native commit identification."""
         return None
 
-
     @property
-    #pylint: disable=R0201
+    # pylint: disable=R0201
     def user(self):
         """The user who performed the commit (if applicable)."""
         return 'n/a'
-
 
     @property
     def id_short(self):
@@ -125,7 +111,6 @@ class VCS(object):
         """
         return self.id
 
-
     @property
     def number(self):
         """
@@ -133,7 +118,6 @@ class VCS(object):
         Otherwise this simulates an increasing commit number.
         """
         return int(self.id)
-
 
     @property
     def modified(self):
@@ -148,10 +132,9 @@ class VCS(object):
         modified can only updated with MODIFIED and ADDED files.
         """
         return last_mtime(
-            sum(self.status()[ST_MOD:ST_ADD+1], []),
+            sum(self.status()[ST_MOD:ST_ADD + 1], []),
             prefix=self.source_root
         ) or 0
-
 
     @property
     def release(self):
@@ -171,7 +154,6 @@ class VCS(object):
 
         return rel_str
 
-
     @property
     def id_string(self):
         """
@@ -179,8 +161,7 @@ class VCS(object):
         """
         return str(self.branch) + "-" + str(self.release)
 
-
-    #pylint: disable=R0201
+    # pylint: disable=R0201
     def status(self):
         """
         Returns a tuple of lists of modified files in the changeset:
@@ -194,8 +175,7 @@ class VCS(object):
             [CLEAN, ...],    # ST_CLN: file tracked by VCS and unmodified
         )
         """
-        return ([], [], [], [], [], [], [])
-
+        return [], [], [], [], [], [], []
 
     def list_files(self):
         """
@@ -205,11 +185,10 @@ class VCS(object):
         raise NotImplementedError(
             "VCS module %s must implement %s()" % (
                 self.vcs,
-                #pylint: disable=W0212
+                # pylint: disable=W0212
                 sys._getframe(1).f_code.co_name,
             )
         )
-
 
     def info(self, include_files=False):
         """
@@ -217,16 +196,16 @@ class VCS(object):
         information.
         """
         info = {
-            'type':          self.vcs,
+            'type': self.vcs,
             'upstream_repo': self.upstream_repo,
-            'name':          self.name,
-            'branch':        self.branch,
-            'id':            self.id,
-            'id_short':      self.id_short,
-            'id_string':     self.id_string,
-            'number':        self.number,
-            'user':          self.user,
-            'release':       self.release,
+            'name': self.name,
+            'branch': self.branch,
+            'id': self.id,
+            'id_short': self.id_short,
+            'id_string': self.id_string,
+            'number': self.number,
+            'user': self.user,
+            'release': self.release,
         }
 
         if include_files:
@@ -238,7 +217,6 @@ class VCS(object):
             info['filestatus'] = status_info
 
         return info
-
 
     def __str__(self):
         """String represenation"""
@@ -295,15 +273,13 @@ def detect_vcs(directory, *args, **argv):
         return archive_vcs
 
     if not possible_vcs:
-        message = (
-            "No recognized VCS management of source tree '%s' - "
-            "do you need to login to a VCS?" % directory
-        )
+        # pylint: disable=C0301
+        message = f"No recognized VCS management of source tree '{directory}' - do you need to login to a VCS?"
         for error in errors:
             message += "\n\tWARNING: %s" % error
         raise VCSUnsupported(message)
 
-    if 1 < len(possible_vcs):
+    if len(possible_vcs) > 1:
         print(
             'WARNING: multiple VCS matches: {}'.format(
                 ', '.join([vcs.vcs for vcs in possible_vcs]),
@@ -317,7 +293,7 @@ def detect_vcs(directory, *args, **argv):
 try:
     import setuptools.command.egg_info
 
-    #pyline: disable=R0904
+    # pyline: disable=R0904
     class VCSInfoEggInfo(setuptools.command.egg_info.egg_info):
         """
         Override the egg_info command to appropriately set build tags.
@@ -331,7 +307,6 @@ try:
             )
 
             # first, see if we can get vcs information.
-            vcs = None
             try:
                 vcs = detect_vcs(sourcedir)
                 tag_build = '.%s' % vcs.number
