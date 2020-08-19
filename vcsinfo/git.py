@@ -10,6 +10,7 @@ import vcsinfo
 try:
     import git
 except ImportError as err:
+    # pylint: disable=C0301
     raise vcsinfo.VCSUnsupported("GIT VCS module requires GitPython: {0}".format(err))
 
 
@@ -18,25 +19,24 @@ class VCSGit(vcsinfo.VCS):
     Class used to retrieve information about a Git managed source tree.
     """
 
-
     git_to_vcsinfo_status = {
-        'M' : vcsinfo.ST_MOD,
-        'A' : vcsinfo.ST_ADD,
-        'D' : vcsinfo.ST_REM,
+        'M': vcsinfo.ST_MOD,
+        'A': vcsinfo.ST_ADD,
+        'D': vcsinfo.ST_REM,
         # don't know how the below maps
-        #'' : vcsinfo.ST_DEL,
-        #'' : vcsinfo.ST_UNK,
-        #'' : vcsinfo.ST_IGN,
-        #'' : vcsinfo.ST_CLN,
+        # '' : vcsinfo.ST_DEL,
+        # '' : vcsinfo.ST_UNK,
+        # '' : vcsinfo.ST_IGN,
+        # '' : vcsinfo.ST_CLN,
     }
-
 
     def __init__(self, directory):
         """Constructor"""
         vcsinfo.VCS.__init__(self)
         try:
+            # pylint: disable=E1101
             self.vcs_obj = git.Repo(directory)
-        except git.exc.InvalidGitRepositoryError:
+        except git.exc.InvalidGitRepositoryError:  # pylint: disable=E1101
             raise TypeError("Directory '%s' not managed by %s" % (
                 directory,
                 self.vcs,
@@ -60,7 +60,6 @@ class VCSGit(vcsinfo.VCS):
                 "the root of the repository" % (directory, self.vcs)
             )
 
-
     @property
     def upstream_repo(self):
         """The location of the upstream VCS repository."""
@@ -71,7 +70,6 @@ class VCSGit(vcsinfo.VCS):
                 return self.vcs_obj.remotes.origin.url
             except AttributeError:
                 return None
-
 
     @property
     def name(self):
@@ -84,9 +82,8 @@ class VCSGit(vcsinfo.VCS):
             self._name = os.path.splitext(os.path.basename(path))[0]
         return self._name
 
-
     @property
-    #pylint: disable=R0912
+    # pylint: disable=R0912
     def branch(self):
         found_branch = 'DETACHED'
 
@@ -103,19 +100,18 @@ class VCSGit(vcsinfo.VCS):
                 else:
                     branches[branch.name] = branch
 
-            def set_branch_info(branch, git_obj):
+            def set_branch_info(_branch, _git_obj):
                 """registers a commit"""
-                if commits.has_key(git_obj.hexsha):
+                if _git_obj.hexsha in commits:
                     return False
-                commits[git_obj.hexsha] = {
-                    'branch' : branch,
-                    'object' : git_obj,
-                    }
+                commits[_git_obj.hexsha] = {
+                    'branch': _branch,
+                    'object': _git_obj,
+                }
                 return True
 
             class BranchDiscoveryDone(Exception):
                 """Error signifying end of branch discovery."""
-                pass
 
             try:
                 # Prime commit with 'master' branch first
@@ -148,7 +144,6 @@ class VCSGit(vcsinfo.VCS):
 
         return found_branch
 
-
     @property
     def user(self):
         user = ''
@@ -158,16 +153,13 @@ class VCSGit(vcsinfo.VCS):
             ).committer.email
         return user.replace('@adobe.com', '')
 
-
     @property
     def id(self):
         return self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
 
-
     @property
     def id_short(self):
         return self.id[:6]
-
 
     @property
     def number(self):
@@ -219,7 +211,6 @@ class VCSGit(vcsinfo.VCS):
 
         return number
 
-
     def status(self):
         status = [[], [], [], [], [], [], []]
 
@@ -230,6 +221,7 @@ class VCSGit(vcsinfo.VCS):
             if change in self.git_to_vcsinfo_status:
                 status[self.git_to_vcsinfo_status[change]].append(filename)
 
+        # pylint: disable=R1718
         vcs_files = set([
             fn
             for fn
@@ -241,12 +233,11 @@ class VCSGit(vcsinfo.VCS):
         clean_files -= set(status[vcsinfo.ST_MOD])
         clean_files -= set(status[vcsinfo.ST_ADD])
         clean_files -= set(status[vcsinfo.ST_REM])
-        clean_files = list(clean_files) #pylint: disable=redefined-variable-type
+        clean_files = list(clean_files)
         clean_files.sort()
         status[vcsinfo.ST_CLN] = clean_files
 
         return status
-
 
     def list_files(self):
         status = self.status()
@@ -254,7 +245,7 @@ class VCSGit(vcsinfo.VCS):
             set(status[vcsinfo.ST_CLN])
             | set(status[vcsinfo.ST_ADD])
             | set(status[vcsinfo.ST_MOD])
-            )
+        )
         vcs_files.sort()
         return vcs_files
 

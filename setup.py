@@ -1,12 +1,12 @@
 """
 Copyright (C) 2014-2020 Adobe
 """
+import os
+import sys
 from setuptools import setup, find_packages
 import vcsinfo
-import os
 
-
-VERSION='0.1'
+VERSION = '0.2'
 BUILD_NR = os.getenv('VCSINFO_NUMBER')
 THIS_DIR = os.path.dirname(__file__)
 if not BUILD_NR:
@@ -31,7 +31,6 @@ else:
     except IOError:
         pass
 
-
 REQ_FILE = 'requirements.txt'
 REQUIRES = []
 try:
@@ -41,11 +40,11 @@ try:
             if _line and _line[0].isalpha():
                 REQUIRES.append(_line)
 except IOError as err:
+    # pylint: disable=C0301
     sys.stderr.write('Python build requirements must be specified in "{0}": {1}\n'.format(REQ_FILE, err))
-    os.exit(err.errno)
+    sys.exit(err.errno)
 
-
-#pylint: disable=C0301
+# pylint: disable=C0301
 setup(
     name='vcsinfo',
     version=VERSION,

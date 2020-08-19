@@ -8,6 +8,7 @@ import json
 import os
 import sys
 
+# pylint: disable=W0406
 import vcsinfo
 
 
@@ -16,6 +17,7 @@ def parse_args():
     Setup command line argument parsing and help.
     """
     parser = argparse.ArgumentParser(
+        # pylint: disable=C0301
         description='vcsinfo returns version control information for the given directory'
     )
 
@@ -23,6 +25,7 @@ def parse_args():
         '-d', '--directory',
         default=os.getcwd(),
         dest='directory',
+        # pylint: disable=C0301
         help='directory to get info for (defaults to current working directory)',
     )
 
@@ -37,22 +40,23 @@ def parse_args():
     return parser.parse_args()
 
 
-def main(argv):
+def main():
     """
     Gets version control information for the given directory and outputs as a
     JSON document.
     """
     args = parse_args()
 
+    # pylint: disable=I1101
     vcs = vcsinfo.detect_vcs(args.directory)
-    print json.dumps(
+    print(json.dumps(
         vcs.info(include_files=args.include_files),
         sort_keys=True,
         indent=2,
-    )
+    ))
 
     return os.EX_OK
 
 
-if '__main__' == __name__:
-    sys.exit(main(sys.argv))
+if __name__ == '__main__':
+    sys.exit(main())
