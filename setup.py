@@ -1,8 +1,6 @@
 """
 Copyright (C) 2014-2020 Adobe
 """
-from __future__ import print_function
-
 from setuptools import setup, find_packages
 import vcsinfo
 import os
@@ -22,7 +20,6 @@ try:
         else:
             VCS = _vcs
             break
-    print('setup: VCS={}'.format(VCS), file=sys.stderr)
     if VCS and VCS.number:
         BUILD_NR = VCS.number
 except vcsinfo.VCSUnsupported:

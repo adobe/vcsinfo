@@ -2,7 +2,7 @@
 Copyright (C) 2020 Adobe
 """
 
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
 
 import os
 
@@ -74,7 +74,7 @@ class VCSPyEgg(vcsinfo.VCS):
 
     @property
     def number(self):
-        pass
+        return self.dist.version.rsplit('.', 1)[-1]
 
 
     def status(self):
