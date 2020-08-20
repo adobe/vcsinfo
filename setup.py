@@ -1,21 +1,32 @@
 """
 Copyright (C) 2014-2020 Adobe
 """
+from __future__ import print_function
+
 from setuptools import setup, find_packages
 import vcsinfo
 import os
+import sys
 
 
 VERSION='0.1'
-BUILD_NR = os.getenv('VCSINFO_NUMBER')
 THIS_DIR = os.path.dirname(__file__)
-if not BUILD_NR:
-    try:
-        VCS = vcsinfo.detect_vcs(THIS_DIR)
-        if VCS and VCS.number:
-            BUILD_NR = VCS.number
-    except vcsinfo.VCSUnsupported:
-        pass
+BUILD_NR = None
+try:
+    VCS = None
+    # Only use py_egg if git or something else is not available.
+    for _vcs in vcsinfo.detect_vcss(THIS_DIR):
+        if _vcs.vcs == 'py_egg':
+            VCS = _vcs
+            # keep looking for a real VCS
+        else:
+            VCS = _vcs
+            break
+    print('setup: VCS={}'.format(VCS), file=sys.stderr)
+    if VCS and VCS.number:
+        BUILD_NR = VCS.number
+except vcsinfo.VCSUnsupported:
+    pass
 
 if BUILD_NR:
     VERSION = '{}.{}'.format(VERSION, BUILD_NR)

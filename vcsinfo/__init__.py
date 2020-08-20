@@ -1,5 +1,5 @@
 """
-Copyright (C) 2014 Adobe
+Copyright (C) 2014-2020 Adobe
 """
 
 
@@ -261,12 +261,13 @@ def load_vcs(name, directory, *args, **argv):
     return vcs
 
 
-def detect_vcs(directory, *args, **argv):
+def detect_vcss(directory, *args, **argv):
     """
     Interrogate the given directory for vcs information, returning an object
     that can be used to obtain information about the current conditions of the
     source tree.
     """
+    directory = directory or os.getcwd()
     vcs_dir = os.path.dirname(__file__)
     # Ignore things that don't look like python modules
     # and list archive.py last.
@@ -303,15 +304,21 @@ def detect_vcs(directory, *args, **argv):
             message += "\n\tWARNING: %s" % error
         raise VCSUnsupported(message)
 
-    if 1 < len(possible_vcs):
+    return possible_vcs
+
+
+def detect_vcs(directory, *args, **argv):
+    possible_vcss = detect_vcss(directory, *args, **argv)
+
+    if 1 < len(possible_vcss):
         print(
             'WARNING: multiple VCS matches: {}'.format(
-                ', '.join([vcs.vcs for vcs in possible_vcs]),
+                ', '.join([vcs.vcs for vcs in possible_vcss]),
             ),
             file=sys.stderr,
         )
 
-    return possible_vcs[0]
+    return possible_vcss[0]
 
 
 try:
@@ -349,3 +356,8 @@ try:
 
 except ImportError:
     pass
+
+
+# Local Variables:
+# fill-column: 100
+# End:
