@@ -12,3 +12,4 @@ dist
 vendor
 .*sw*
 buildrunner.results
+venv

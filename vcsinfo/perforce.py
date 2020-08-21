@@ -12,8 +12,9 @@ try:
 except ImportError as err:
     raise vcsinfo.VCSUnsupported(
         "Perforce VCS module requires the P4Python library to be installed. "
-        #pylint: disable=C0301
-        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {0}".format(err)
+        # pylint: disable=C0301
+        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {0}".format(
+            err)
     )
 
 
@@ -22,28 +23,26 @@ class VCSPerforce(vcsinfo.VCS):
     Class used to retrieve information about a Perforce managed source tree.
     """
 
-
     p4_to_vcs_status = {
-        'edit'        : vcsinfo.ST_MOD,
-        'integrate'   : vcsinfo.ST_MOD,
-        'add'         : vcsinfo.ST_ADD,
-        'branch'      : vcsinfo.ST_MOD,
-        'move/add'    : vcsinfo.ST_ADD,
-        'delete'      : vcsinfo.ST_REM,
-        'move/delete' : vcsinfo.ST_REM,
+        'edit': vcsinfo.ST_MOD,
+        'integrate': vcsinfo.ST_MOD,
+        'add': vcsinfo.ST_ADD,
+        'branch': vcsinfo.ST_MOD,
+        'move/add': vcsinfo.ST_ADD,
+        'delete': vcsinfo.ST_REM,
+        'move/delete': vcsinfo.ST_REM,
         # don't know how the below maps
-        #''      : vcsinfo.ST_DEL,
-        #''      : vcsinfo.ST_UNK,
-        #''      : vcsinfo.ST_IGN,
-        #''      : vcsinfo.ST_CLN,
+        # ''      : vcsinfo.ST_DEL,
+        # ''      : vcsinfo.ST_UNK,
+        # ''      : vcsinfo.ST_IGN,
+        # ''      : vcsinfo.ST_CLN,
     }
 
-
     def __init__(
-        self,
-        directory,
-        development_path='trunk',
-        branches_path='branches',
+            self,
+            directory,
+            development_path='trunk',
+            branches_path='branches',
     ):
         """Constructor"""
         vcsinfo.VCS.__init__(self)
@@ -59,14 +58,12 @@ class VCSPerforce(vcsinfo.VCS):
         self._inv_map = self._map.reverse()
         self._branch = None
 
-
     def __del__(self):
         """
         Make sure the perforce connection is closed when this object is removed
         """
         if hasattr(self, 'vcs_obj') and self.vcs_obj:
             self.vcs_obj.disconnect()
-
 
     def detect_source_root(self, directory):
         """
@@ -116,11 +113,9 @@ class VCSPerforce(vcsinfo.VCS):
             if vcs_obj and vcs_obj.connected():
                 vcs_obj.disconnect()
 
-
     @property
     def upstream_repo(self):
         return self._depot_root
-
 
     @property
     def name(self):
@@ -132,13 +127,11 @@ class VCSPerforce(vcsinfo.VCS):
                 self._name = dirs[-3]
         return self._name
 
-
     @property
     def branch(self):
         if not self._branch:
             self._branch = self._depot_root.split('/')[-1]
         return self._branch
-
 
     @property
     def id(self):
@@ -155,7 +148,6 @@ class VCSPerforce(vcsinfo.VCS):
             vcs_id = changes[0]['change']
         return vcs_id
 
-
     @property
     def user(self):
         changes = self.vcs_obj.run(
@@ -171,7 +163,6 @@ class VCSPerforce(vcsinfo.VCS):
             vcs_id = changes[0]['user']
         return vcs_id
 
-
     def classify_status(self, info_list, status_func):
         """Sort files into status lists."""
         status = ([], [], [], [], [], [], [])
@@ -181,52 +172,48 @@ class VCSPerforce(vcsinfo.VCS):
 
         return status
 
-
     def status(self):
         status = ([], [], [], [], [], [], [])
 
-        open_file_info = dict([
-            (ofi['clientFile'], ofi)
+        open_file_info = {
+            ofi['clientFile']: ofi
             for ofi
             in self.vcs_obj.run("opened", self.source_root + '/...')
-        ])
+        }
 
-        file_map = dict([
-            (fmap['clientFile'], fmap)
+        file_map = {
+            fmap['clientFile']: fmap
             for fmap
             in self.vcs_obj.run("where", *open_file_info.keys())
-        ])
+        }
 
         for client_file, change_info in open_file_info.items():
-            source_file = file_map[client_file]['path'][
-                len(self.source_root) + 1:
-            ]
+            # pylint: disable=C0301
+            source_file = file_map[client_file]['path'][len(self.source_root) + 1:]
             status[self.p4_to_vcs_status[change_info['action']]].append(
                 source_file
             )
 
         return status
 
-
     def list_files(self):
         status = ([], [], [], [], [], [], [])
 
-        depot_file_info = dict([
-            (ofi['depotFile'], ofi)
+        depot_file_info = {
+            ofi['depotFile']: ofi
             for ofi
             in self.vcs_obj.run("files", self.source_root + '/...')
-        ])
+        }
 
-        file_map = dict([
-            (fmap['depotFile'], fmap)
+        file_map = {
+            fmap['depotFile']: fmap
             for fmap
             in self.vcs_obj.run("where", *depot_file_info.keys())
-        ])
+        }
 
         for depot_file, change_info in depot_file_info.items():
-            source_file = file_map[depot_file]['path'][
-                len(self.source_root) + 1:
-            ]
+            # pylint: disable=C0301
+            source_file = file_map[depot_file]['path'][len(self.source_root) + 1:]
             status[self.p4_to_vcs_status[change_info['action']]].append(
                 source_file
             )
@@ -238,7 +225,7 @@ class VCSPerforce(vcsinfo.VCS):
              | set(status[vcsinfo.ST_CLN])
              | set(cur_changeset[vcsinfo.ST_ADD]))
             - set(cur_changeset[vcsinfo.ST_REM])
-            )
+        )
         source_tree_files.sort()
 
         return source_tree_files
