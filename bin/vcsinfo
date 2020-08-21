@@ -12,7 +12,7 @@ import sys
 import vcsinfo
 
 
-def parse_args():
+def parse_args(argv):
     """
     Setup command line argument parsing and help.
     """
@@ -37,7 +37,7 @@ def parse_args():
         help='include detailed file information',
     )
 
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
 def main(argv):
@@ -45,7 +45,7 @@ def main(argv):
     Gets version control information for the given directory and outputs as a
     JSON document.
     """
-    args = parse_args(argv)
+    args = parse_args(argv[1:])
 
     # pylint: disable=I1101
     vcs = vcsinfo.detect_vcs(args.directory)
