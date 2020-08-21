@@ -1,6 +1,7 @@
 """
-Copyright (C) 2014 Adobe
+Copyright (C) 2014-2020 Adobe
 """
+from __future__ import print_function
 
 import glob
 import os
@@ -239,12 +240,13 @@ def load_vcs(name, directory, *args, **argv):
     return vcs
 
 
-def detect_vcs(directory, *args, **argv):
+def detect_vcss(directory, *args, **argv):
     """
     Interrogate the given directory for vcs information, returning an object
     that can be used to obtain information about the current conditions of the
     source tree.
     """
+    directory = directory or os.getcwd()
     vcs_dir = os.path.dirname(__file__)
     # Ignore things that don't look like python modules
     # and list archive.py last.
@@ -274,20 +276,26 @@ def detect_vcs(directory, *args, **argv):
 
     if not possible_vcs:
         # pylint: disable=C0301
-        message = f"No recognized VCS management of source tree '{directory}' - do you need to login to a VCS?"
+        message = "No recognized VCS management of source tree '{directory}' - do you need to login to a VCS?".format(directory=directory)
         for error in errors:
             message += "\n\tWARNING: %s" % error
         raise VCSUnsupported(message)
 
-    if len(possible_vcs) > 1:
+    return possible_vcs
+
+
+def detect_vcs(directory, *args, **argv):
+    possible_vcss = detect_vcss(directory, *args, **argv)
+
+    if len(possible_vcss) > 1:
         print(
             'WARNING: multiple VCS matches: {}'.format(
-                ', '.join([vcs.vcs for vcs in possible_vcs]),
+                ', '.join([vcs.vcs for vcs in possible_vcss]),
             ),
             file=sys.stderr,
         )
 
-    return possible_vcs[0]
+    return possible_vcss[0]
 
 
 try:
@@ -324,3 +332,8 @@ try:
 
 except ImportError:
     pass
+
+
+# Local Variables:
+# fill-column: 100
+# End:

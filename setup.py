@@ -1,35 +1,34 @@
 """
 Copyright (C) 2014-2020 Adobe
 """
+
 import os
 import sys
 from setuptools import setup, find_packages
 import vcsinfo
 
 VERSION = '0.2'
-BUILD_NR = os.getenv('VCSINFO_NUMBER')
 THIS_DIR = os.path.dirname(__file__)
-if not BUILD_NR:
-    try:
-        VCS = vcsinfo.detect_vcs(THIS_DIR)
-        if VCS and VCS.number:
-            BUILD_NR = VCS.number
-    except vcsinfo.VCSUnsupported:
-        pass
+BUILD_NR = None
+try:
+    VCS = None
+    # Only use py_info if git or something else is not available.
+    for _vcs in vcsinfo.detect_vcss(THIS_DIR):
+        if _vcs.vcs == 'pyinfo':
+            VCS = _vcs
+            # keep looking for a real VCS
+        else:
+            VCS = _vcs
+            break
+    if VCS and VCS.number:
+        BUILD_NR = VCS.number
+        if VCS.modified:
+            BUILD_NR = '{}.dev{}'.format(BUILD_NR, VCS.modified)
+except vcsinfo.VCSUnsupported:
+    pass
 
 if BUILD_NR:
     VERSION = '{}.{}'.format(VERSION, BUILD_NR)
-else:
-    pipath = os.path.join(THIS_DIR, 'PKG-INFO')
-    try:
-        with open(pipath, 'r') as pi_obj:
-            for line in pi_obj.readlines():
-                key, value = line.strip().split(':', 1)
-                if key == 'Version':
-                    VERSION = value.strip()
-                    break
-    except IOError:
-        pass
 
 REQ_FILE = 'requirements.txt'
 REQUIRES = []
@@ -60,9 +59,4 @@ setup(
         'bin/vcsinfo',
     ],
     install_requires=REQUIRES,
-
-    # override the default egg_info class to enable setting the tag_build
-    cmdclass={
-        'egg_info': vcsinfo.VCSInfoEggInfo,
-    },
 )
