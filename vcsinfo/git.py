@@ -115,7 +115,7 @@ class VCSGit(vcsinfo.VCS):
 
             try:
                 # Prime commit with 'master' branch first
-                for branch in [master_branch] + branches.values():
+                for branch in [master_branch] + list(branches.values()):
                     # If the branch is None continue (if we didn't find a
                     # master branch, for instance)
                     if not branch:
