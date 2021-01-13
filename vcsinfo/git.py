@@ -4,6 +4,7 @@ Copyright (C) 2014 Adobe
 
 from __future__ import absolute_import
 
+import logging
 import os
 import vcsinfo
 
@@ -12,6 +13,9 @@ try:
 except ImportError as err:
     # pylint: disable=C0301
     raise vcsinfo.VCSUnsupported("GIT VCS module requires GitPython: {0}".format(err))
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class VCSGit(vcsinfo.VCS):
@@ -30,15 +34,15 @@ class VCSGit(vcsinfo.VCS):
         # '' : vcsinfo.ST_CLN,
     }
 
-    def __init__(self, directory):
+    def __init__(self, dirname):
         """Constructor"""
         vcsinfo.VCS.__init__(self)
         try:
             # pylint: disable=E1101
-            self.vcs_obj = git.Repo(directory)
+            self.vcs_obj = git.Repo(dirname)
         except git.exc.InvalidGitRepositoryError:  # pylint: disable=E1101
             raise TypeError("Directory '%s' not managed by %s" % (
-                directory,
+                dirname,
                 self.vcs,
             ))
         try:
@@ -49,16 +53,17 @@ class VCSGit(vcsinfo.VCS):
                 raise AssertionError("No git working_tree_dir")
         except AssertionError:
             raise TypeError("Directory '%s' not a working %s checkout" % (
-                directory,
+                dirname,
                 self.vcs,
             ))
 
         # make sure the git working tree is the same as our directory
-        if os.path.abspath(self.source_root) != os.path.abspath(directory):
+        if os.path.abspath(self.source_root) != os.path.abspath(dirname):
             raise TypeError(
                 "Directory '%s' is managed by %s, but is not "
-                "the root of the repository" % (directory, self.vcs)
+                "the root of the repository" % (dirname, self.vcs)
             )
+        LOGGER.debug('Matched {}: {}'.format(self.vcs, dirname))
 
     @property
     def upstream_repo(self):

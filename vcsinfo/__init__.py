@@ -4,8 +4,12 @@ Copyright (C) 2014-2020 Adobe
 from __future__ import print_function
 
 import glob
+import logging
 import os
 import sys
+
+
+LOGGER = logging.getLogger(__file__)
 
 
 class VCSUnsupported(Exception):
@@ -235,6 +239,7 @@ def load_vcs(name, directory, *args, **argv):
         VCSUnsupported: if the vcs module does not support the given directory
         TypeError: if the vcs module does not support the given directory
     """
+    LOGGER.debug('Loading VCS module: {}'.format(name))
     vcs_module = __import__('.'.join((__name__, name)), fromlist=[__name__])
     vcs = vcs_module.VCS(directory, *args, **argv)
     return vcs
@@ -264,15 +269,13 @@ def detect_vcss(directory, *args, **argv):
         try:
             vcs = load_vcs(modname, directory, *args, **argv)
             if hasattr(vcs, 'is_archive') and vcs.is_archive:
-                archive_vcs = vcs
+                # if an "archive" vcs config is present, it always wins
+                return [archive_vcs]
             else:
                 possible_vcs.append(vcs)
         except (VCSUnsupported, TypeError) as err:
+            LOGGER.debug('Failed {}: {}'.format(modname, err))
             errors.append(str(err))
-
-    # if an "archive" vcs config is present, it always wins
-    if archive_vcs:
-        return archive_vcs
 
     if not possible_vcs:
         # pylint: disable=C0301
@@ -286,6 +289,7 @@ def detect_vcss(directory, *args, **argv):
 
 def detect_vcs(directory, *args, **argv):
     possible_vcss = detect_vcss(directory, *args, **argv)
+    LOGGER.debug('Possible VCSs: {}'.format(possible_vcss))
 
     if len(possible_vcss) > 1:
         print(

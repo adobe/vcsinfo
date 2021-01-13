@@ -6,11 +6,15 @@ from __future__ import absolute_import
 
 import email.parser
 import io
+import logging
 import os
 import re
 import sys
 
 import vcsinfo
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class VCSPyInfo(vcsinfo.VCS):
@@ -26,11 +30,14 @@ class VCSPyInfo(vcsinfo.VCS):
         files = os.listdir(dirname)
         contents = [ent for ent in files if ent.endswith('.egg-info')]
         if contents:
+            LOGGER.debug('Found {}'.format(contents))
             _dirname = os.path.join(dirname, contents[0])
+            LOGGER.debug('Picking {}'.format(_dirname))
         else:
             # Didn't find a .egg-info - stick with dirname
             _dirname = dirname
         self.detect_source_root(_dirname)
+        LOGGER.debug('Matched {}: {}'.format(self.vcs, dirname))
 
 
     def detect_source_root(self, dirname):
@@ -39,6 +46,7 @@ class VCSPyInfo(vcsinfo.VCS):
         dirname = os.path.realpath(dirname)
         try:
             pi_path = os.path.join(dirname, 'PKG-INFO')
+            LOGGER.debug('Reading {}'.format(pi_path))
             with io.open(pi_path, encoding='utf-8', errors='replace') as piobj:
                 raw_pi = piobj.read()
             self.pkg_info = email.parser.Parser().parsestr(raw_pi)
@@ -48,10 +56,9 @@ class VCSPyInfo(vcsinfo.VCS):
         sources_txt = os.path.join(dirname, 'SOURCES.txt')
         try:
             with io.open(sources_txt, encoding='utf-8', errors='replace') as st_obj:
-                self.files = st_obj.readlines()
-        except IOError:
-            # FIXME: walk directory looking for files
-            self.files = None
+                self.files = [line.rstrip(os.linesep) for line in st_obj.readlines()]
+        except IOError as err:
+            raise TypeError('Failed reading {}: {}'.format(sources_txt, err))
 
 
     def _get_version(self):

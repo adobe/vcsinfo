@@ -4,6 +4,7 @@ Copyright (C) 2012-2013 Adobe
 
 from __future__ import absolute_import
 
+import logging
 import os
 import vcsinfo
 
@@ -15,6 +16,9 @@ try:
 except ImportError as err:
     # pylint: disable=C0301
     raise vcsinfo.VCSUnsupported("Mercurial VCS module requires mercurial: {0}".format(err))
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class VCSHg(vcsinfo.VCS):
@@ -31,6 +35,7 @@ class VCSHg(vcsinfo.VCS):
             self.vcs_obj = hg.repository(hgui, path=self.source_root.encode('utf-8'), create=False)
         except TypeError as exc:
             raise TypeError('Unable to initialize Hg: {}'.format(exc))
+        LOGGER.debug('Matched {}: {}'.format(self.vcs, dirname))
 
     def detect_source_root(self, dirname):
         """Find the top-most source directory"""

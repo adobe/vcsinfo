@@ -4,12 +4,46 @@ Copyright (C) 2020-2020 Adobe
 """
 
 import argparse
+from collections import OrderedDict
 import json
+import logging
 import os
 import sys
 
 # pylint: disable=W0406
 import vcsinfo
+
+
+PROC_NAME = 'vcsinfo'
+LOG_NAME = PROC_NAME
+
+
+LOGLEVEL_NAMES = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+LOGLEVEL_LOOKUP = OrderedDict()
+for _ll_name, _ll_val in zip(LOGLEVEL_NAMES, range(len(LOGLEVEL_NAMES))):
+    LOGLEVEL_LOOKUP[str(_ll_val)] = _ll_name
+    LOGLEVEL_LOOKUP[_ll_name] = _ll_name
+
+
+def get_logger(loglevel):
+    formatter = logging.Formatter('%(asctime)s %(name)-30s %(levelname)-8s %(message)s')
+    logger = logging.getLogger(LOG_NAME)
+    logger.setLevel(loglevel)
+
+    console_handler = logging.StreamHandler(sys.stderr)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    return logger
+
+
+def loglevel_type(string):
+    ll_name = string.upper()
+    if ll_name not in LOGLEVEL_LOOKUP:
+        raise argparse.ArgumentTypeError(
+            'Value "{}" is not a valid loglevel: {}'.format(string, ', '.join(LOGLEVEL_LOOKUP.keys()))
+        )
+    return LOGLEVEL_LOOKUP[ll_name]
 
 
 def parse_args(argv):
@@ -19,6 +53,15 @@ def parse_args(argv):
     parser = argparse.ArgumentParser(
         # pylint: disable=C0301
         description='vcsinfo returns version control information for the given directory'
+    )
+
+    parser.add_argument(
+        '-l', '--loglevel',
+        dest='loglevel',
+        help='Verbosity of output:'
+             '  Allowed values are {}'.format(', '.join(map(str, LOGLEVEL_LOOKUP.keys()))),
+        type=loglevel_type,
+        default='WARNING',
     )
 
     parser.add_argument(
@@ -46,6 +89,8 @@ def main(argv):
     JSON document.
     """
     args = parse_args(argv[1:])
+    logger = get_logger(args.loglevel)
+    logger.debug('Startup')
 
     # pylint: disable=I1101
     vcs = vcsinfo.detect_vcs(args.directory)
