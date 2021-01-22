@@ -59,7 +59,7 @@ def parse_args(argv):
     parser.add_argument(
         '-l', '--loglevel',
         dest='loglevel',
-        help='Verbosity of output:  Allowed values are {llevel_values}',
+        help=f'Verbosity of output:  Allowed values are {llevel_values}',
         type=loglevel_type,
         default='WARNING',
     )
