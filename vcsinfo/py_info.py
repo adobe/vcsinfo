@@ -36,7 +36,7 @@ class VCSPyInfo(vcsinfo.VCS):
             # Didn't find a .egg-info - stick with dirname
             _dirname = dirname
         self.detect_source_root(_dirname)
-        LOGGER.debug('Matched {self.vcs}: {dirname}')
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
 
     def detect_source_root(self, dirname):
