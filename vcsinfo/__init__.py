@@ -4,8 +4,12 @@ Copyright (C) 2014-2020 Adobe
 from __future__ import print_function
 
 import glob
+import logging
 import os
 import sys
+
+
+LOGGER = logging.getLogger(__file__)
 
 
 class VCSUnsupported(Exception):
@@ -145,13 +149,9 @@ class VCS:
         to the local tree.
         """
         modified = self.modified
-        modstr = '.M%d' % modified
+        modstr = f'.M{modified}'
 
-        rel_str = "%s.I%s%s" % (
-            self.number,
-            self.id_short,
-            modstr,
-        )
+        rel_str = f'{self.number}.I{self.id_short}{modstr}'
 
         return rel_str
 
@@ -183,13 +183,7 @@ class VCS:
         Return a list of files known to the VCS
         (committed + changeset(added, moved) - changeset(deleted))
         """
-        raise NotImplementedError(
-            "VCS module %s must implement %s()" % (
-                self.vcs,
-                # pylint: disable=W0212
-                sys._getframe(1).f_code.co_name,
-            )
-        )
+        raise NotImplementedError(f'VCS module {self.vcs} must implement list_files()')
 
     def info(self, include_files=False):
         """
@@ -221,7 +215,7 @@ class VCS:
 
     def __str__(self):
         """String represenation"""
-        return '%s(%s)' % (self.__class__.__name__, self.source_root)
+        return f'{self.__class__.__name__}({self.source_root})'
 
 
 def load_vcs(name, directory, *args, **argv):
@@ -235,6 +229,7 @@ def load_vcs(name, directory, *args, **argv):
         VCSUnsupported: if the vcs module does not support the given directory
         TypeError: if the vcs module does not support the given directory
     """
+    LOGGER.debug(f'Loading VCS module: {name}')
     vcs_module = __import__('.'.join((__name__, name)), fromlist=[__name__])
     vcs = vcs_module.VCS(directory, *args, **argv)
     return vcs
@@ -264,21 +259,19 @@ def detect_vcss(directory, *args, **argv):
         try:
             vcs = load_vcs(modname, directory, *args, **argv)
             if hasattr(vcs, 'is_archive') and vcs.is_archive:
-                archive_vcs = vcs
-            else:
-                possible_vcs.append(vcs)
-        except (VCSUnsupported, TypeError) as err:
-            errors.append(str(err))
+                # if an "archive" vcs config is present, it always wins
+                return [archive_vcs]
 
-    # if an "archive" vcs config is present, it always wins
-    if archive_vcs:
-        return archive_vcs
+            possible_vcs.append(vcs)
+        except (VCSUnsupported, TypeError) as err:
+            LOGGER.debug(f'Failed {modname}: {err}')
+            errors.append(str(err))
 
     if not possible_vcs:
         # pylint: disable=C0301
-        message = "No recognized VCS management of source tree '{directory}' - do you need to login to a VCS?".format(directory=directory)
+        message = f'No recognized VCS management of source tree "{directory}" - do you need to login to a VCS?'
         for error in errors:
-            message += "\n\tWARNING: %s" % error
+            message += f'\n\tWARNING: {error}'
         raise VCSUnsupported(message)
 
     return possible_vcs
@@ -286,14 +279,11 @@ def detect_vcss(directory, *args, **argv):
 
 def detect_vcs(directory, *args, **argv):
     possible_vcss = detect_vcss(directory, *args, **argv)
+    LOGGER.debug(f'Possible VCSs: {possible_vcss}')
 
     if len(possible_vcss) > 1:
-        print(
-            'WARNING: multiple VCS matches: {}'.format(
-                ', '.join([vcs.vcs for vcs in possible_vcss]),
-            ),
-            file=sys.stderr,
-        )
+        pvcss = ', '.join([vcs.vcs for vcs in possible_vcss])
+        LOGGER.warning(f'WARNING: multiple VCS matches: {pvcss}')
 
     return possible_vcss[0]
 
@@ -317,9 +307,9 @@ try:
             # first, see if we can get vcs information.
             try:
                 vcs = detect_vcs(sourcedir)
-                tag_build = '.%s' % vcs.number
+                tag_build = f'.{vcs.number}'
                 if vcs.modified > 0:
-                    tag_build = '%s.%s' % (tag_build, vcs.modified)
+                    tag_build = f'{tag_build}.{vcs.modified}'
                 return tag_build
             except TypeError:
                 pass

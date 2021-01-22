@@ -4,6 +4,7 @@ Copyright (C) 2014 Adobe
 
 from __future__ import absolute_import
 
+import logging
 import os
 import vcsinfo
 
@@ -11,11 +12,13 @@ try:
     import P4
 except ImportError as err:
     raise vcsinfo.VCSUnsupported(
-        "Perforce VCS module requires the P4Python library to be installed. "
+        "Perforce VCS module requires the P4Python library to be installed."
         # pylint: disable=C0301
-        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {0}".format(
-            err)
+        f'  See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {err}'
     )
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 class VCSPerforce(vcsinfo.VCS):
@@ -40,7 +43,7 @@ class VCSPerforce(vcsinfo.VCS):
 
     def __init__(
             self,
-            directory,
+            dirname,
             development_path='trunk',
             branches_path='branches',
     ):
@@ -50,13 +53,14 @@ class VCSPerforce(vcsinfo.VCS):
         self._branches_path_id = branches_path
         self._depot_root = ''
 
-        self.detect_source_root(directory)
+        self.detect_source_root(dirname)
         self.vcs_obj = P4.P4(cwd=self.source_root)
         self.vcs_obj.connect()
         self.client = self.vcs_obj.fetch_client()
         self._map = P4.Map(self.client['View'])
         self._inv_map = self._map.reverse()
         self._branch = None
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
     def __del__(self):
         """
