@@ -12,7 +12,7 @@ try:
     import git
 except ImportError as err:
     # pylint: disable=C0301
-    raise vcsinfo.VCSUnsupported("GIT VCS module requires GitPython: {0}".format(err))
+    raise vcsinfo.VCSUnsupported(f'GIT VCS module requires GitPython: {err}')
 
 
 LOGGER = logging.getLogger(__name__)
@@ -63,7 +63,7 @@ class VCSGit(vcsinfo.VCS):
                 "Directory '%s' is managed by %s, but is not "
                 "the root of the repository" % (dirname, self.vcs)
             )
-        LOGGER.debug('Matched {}: {}'.format(self.vcs, dirname))
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
     @property
     def upstream_repo(self):

@@ -40,8 +40,9 @@ def get_logger(loglevel):
 def loglevel_type(string):
     ll_name = string.upper()
     if ll_name not in LOGLEVEL_LOOKUP:
+        llevel_values = ', '.join(LOGLEVEL_LOOKUP.keys())
         raise argparse.ArgumentTypeError(
-            'Value "{}" is not a valid loglevel: {}'.format(string, ', '.join(LOGLEVEL_LOOKUP.keys()))
+            f'Value "{string}" is not a valid loglevel: {llevel_values}'
         )
     return LOGLEVEL_LOOKUP[ll_name]
 
@@ -55,7 +56,7 @@ def parse_args(argv):
         description='vcsinfo returns version control information for the given directory'
     )
 
-    llevel_values = ', '.join(map(str, LOGLEVEL_LOOKUP.keys()))
+    llevel_values = ', '.join(LOGLEVEL_LOOKUP.keys())
     parser.add_argument(
         '-l', '--loglevel',
         dest='loglevel',

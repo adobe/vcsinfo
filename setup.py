@@ -23,12 +23,12 @@ try:
     if VCS and VCS.number:
         BUILD_NR = VCS.number
         if VCS.modified:
-            BUILD_NR = '{}.dev{}'.format(BUILD_NR, VCS.modified)
+            BUILD_NR = f'{BUILD_NR}.dev{VCS.modified}'
 except vcsinfo.VCSUnsupported:
     pass
 
 if BUILD_NR:
-    VERSION = '{}.{}'.format(VERSION, BUILD_NR)
+    VERSION = f'{VERSION}.{BUILD_NR}'
 
 REQ_FILE = 'requirements.txt'
 REQUIRES = []
@@ -40,7 +40,7 @@ try:
                 REQUIRES.append(_line)
 except IOError as err:
     # pylint: disable=C0301
-    sys.stderr.write('Python build requirements must be specified in "{0}": {1}\n'.format(REQ_FILE, err))
+    sys.stderr.write(f'Python build requirements must be specified in "{REQ_FILE}": {err}\n')
     sys.exit(err.errno)
 
 # pylint: disable=C0301

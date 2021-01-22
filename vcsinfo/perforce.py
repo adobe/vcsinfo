@@ -12,10 +12,9 @@ try:
     import P4
 except ImportError as err:
     raise vcsinfo.VCSUnsupported(
-        "Perforce VCS module requires the P4Python library to be installed. "
+        "Perforce VCS module requires the P4Python library to be installed."
         # pylint: disable=C0301
-        "See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {0}".format(
-            err)
+        f'  See http://www.perforce.com/perforce/doc.current/manuals/p4script/03_python.html for more details: {err}'
     )
 
 
@@ -61,7 +60,7 @@ class VCSPerforce(vcsinfo.VCS):
         self._map = P4.Map(self.client['View'])
         self._inv_map = self._map.reverse()
         self._branch = None
-        LOGGER.debug('Matched {}: {}'.format(self.vcs, dirname))
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
     def __del__(self):
         """
