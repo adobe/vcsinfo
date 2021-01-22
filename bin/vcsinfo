@@ -55,11 +55,11 @@ def parse_args(argv):
         description='vcsinfo returns version control information for the given directory'
     )
 
+    llevel_values = ', '.join(map(str, LOGLEVEL_LOOKUP.keys()))
     parser.add_argument(
         '-l', '--loglevel',
         dest='loglevel',
-        help='Verbosity of output:'
-             '  Allowed values are {}'.format(', '.join(map(str, LOGLEVEL_LOOKUP.keys()))),
+        help='Verbosity of output:  Allowed values are {llevel_values}',
         type=loglevel_type,
         default='WARNING',
     )
