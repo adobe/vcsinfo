@@ -7,7 +7,7 @@ import sys
 from setuptools import setup, find_packages
 import vcsinfo
 
-VERSION = '0.2'
+VERSION = '1.0'
 THIS_DIR = os.path.dirname(__file__)
 BUILD_NR = None
 try:
@@ -47,12 +47,12 @@ except IOError as err:
 setup(
     name='vcsinfo',
     version=VERSION,
-    author='***REMOVED***',
-    author_email="***REMOVED***",
-    license="Adobe",
-    url="***REMOVED***",
-    description="Utilities to normalize working with different Version Control Systems",
-    long_description="Utilities to normalize working with different Version Control Systems",
+    author='Adobe',
+    author_email='noreply@adobe.com',
+    license='MIT',
+    url='https://github.com/adobe/vcsinfo',
+    description='Utilities to normalize working with different Version Control Systems',
+    long_description='Utilities to normalize working with different Version Control Systems',
 
     packages=find_packages(),
     scripts=[

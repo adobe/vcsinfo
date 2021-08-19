@@ -1,5 +1,9 @@
 """
-Copyright (C) 2014 Adobe
+Copyright 2021 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
 
 from __future__ import absolute_import
@@ -40,30 +44,23 @@ class VCSGit(vcsinfo.VCS):
         try:
             # pylint: disable=E1101
             self.vcs_obj = git.Repo(dirname)
-        except git.exc.InvalidGitRepositoryError:  # pylint: disable=E1101
-            raise TypeError("Directory '%s' not managed by %s" % (
-                dirname,
-                self.vcs,
-            ))
+        except git.exc.InvalidGitRepositoryError as exc:  # pylint: disable=E1101
+            raise TypeError(f"Directory '{dirname}' not managed by {self.vcs}") from exc
         try:
             self.source_root = self.vcs_obj.working_tree_dir
             # The above may or may not raise an AssertionError
             if not self.source_root:
                 # Here is another reason to raise an AssertionError
                 raise AssertionError("No git working_tree_dir")
-        except AssertionError:
-            raise TypeError("Directory '%s' not a working %s checkout" % (
-                dirname,
-                self.vcs,
-            ))
+        except AssertionError as exc:
+            raise TypeError(f"Directory '{dirname}' not a working {self.vcs} checkout") from exc
 
         # make sure the git working tree is the same as our directory
         if os.path.abspath(self.source_root) != os.path.abspath(dirname):
             raise TypeError(
-                "Directory '%s' is managed by %s, but is not "
-                "the root of the repository" % (dirname, self.vcs)
+                f"Directory '{dirname}' is managed by {self.vcs}, but is not the root of the repository"
             )
-        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
+        LOGGER.debug('Matched {}: {}', self.vcs, dirname)
 
     @property
     def upstream_repo(self):
@@ -94,7 +91,7 @@ class VCSGit(vcsinfo.VCS):
 
         try:
             found_branch = self.vcs_obj.active_branch.name
-        except TypeError:
+        except TypeError as exc:
             commits = {}
             branches = {}
             master_branch = None
@@ -136,7 +133,7 @@ class VCSGit(vcsinfo.VCS):
                     for git_obj in branch.object.iter_parents():
                         if git_obj.hexsha == self.vcs_obj.head.object.hexsha:
                             found_branch = branch.name
-                            raise BranchDiscoveryDone()
+                            raise BranchDiscoveryDone() from exc
                         if not set_branch_info(branch.name, git_obj):
                             # This object is already on another branch
                             break
@@ -208,8 +205,7 @@ class VCSGit(vcsinfo.VCS):
                     # The commit wasn't found on the branch line where it
                     # is located - unpossible!
                     raise Exception(
-                        "Internal error: commit %s not on commit's branch %s"
-                        % (commit_id, branch_name)
+                        f"Internal error: commit {commit_id} not on commit's branch {branch_name}"
                     )
         except TypeError:
             pass

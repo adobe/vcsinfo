@@ -1,5 +1,9 @@
 """
-Copyright (C) 2014 Adobe
+Copyright 2021 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
 
 from __future__ import absolute_import
@@ -25,6 +29,7 @@ class VCSPerforce(vcsinfo.VCS):
     """
     Class used to retrieve information about a Perforce managed source tree.
     """
+    # pylint: disable=too-many-instance-attributes
 
     p4_to_vcs_status = {
         'edit': vcsinfo.ST_MOD,
@@ -100,19 +105,13 @@ class VCSPerforce(vcsinfo.VCS):
                 )
                 pop_idx = branches_path_index - len(depot_path_dirs) + 2
             else:
-                raise TypeError("Directory '%s' not managed by p4 client %s" % (
-                    real_directory,
-                    self.client,
-                ))
+                raise TypeError(f"Directory '{real_directory}' not managed by p4 client {self.client}")
 
             self.source_root = '/'.join(path_dirs[:pop_idx])
             self._depot_root = '/'.join(depot_path_dirs[:pop_idx])
 
         except P4.P4Exception as exc:
-            raise TypeError("Directory '%s' is not managed by p4: %s" % (
-                real_directory,
-                exc,
-            ))
+            raise TypeError(f"Directory '{real_directory}' is not managed by p4: {exc}") from exc
         finally:
             if vcs_obj and vcs_obj.connected():
                 vcs_obj.disconnect()

@@ -1,5 +1,9 @@
 """
-Copyright (C) 2020 Adobe
+Copyright 2021 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
 
 from __future__ import absolute_import
@@ -50,14 +54,14 @@ class VCSPyInfo(vcsinfo.VCS):
                 raw_pi = piobj.read()
             self.pkg_info = email.parser.Parser().parsestr(raw_pi)
         except (ValueError, IOError) as err:
-            raise TypeError(f'Directory "{dirname}" is not an pkg_info directory: {err}')
+            raise TypeError(f'Directory "{dirname}" is not an pkg_info directory: {err}') from err
         self.source_root = dirname
         sources_txt = os.path.join(dirname, 'SOURCES.txt')
         try:
             with io.open(sources_txt, encoding='utf-8', errors='replace') as st_obj:
                 self.files = [line.rstrip(os.linesep) for line in st_obj.readlines()]
         except IOError as err:
-            raise TypeError(f'Failed reading {sources_txt}: {err}')
+            raise TypeError(f'Failed reading {sources_txt}: {err}') from err
 
 
     def _get_version(self):
@@ -68,6 +72,7 @@ class VCSPyInfo(vcsinfo.VCS):
         try:
             mobj = self._ver_mobj
         except AttributeError:
+            # pylint: disable=attribute-defined-outside-init
             mobj = self._ver_mobj = re.match(self.VERSION_RE, self._get_version())
         return mobj
 

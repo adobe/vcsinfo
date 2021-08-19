@@ -1,5 +1,9 @@
 """
-Copyright (C) 2012-2013 Adobe
+Copyright 2021 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
 
 from __future__ import absolute_import
@@ -34,14 +38,14 @@ class VCSHg(vcsinfo.VCS):
             # pylint: disable=C0301
             self.vcs_obj = hg.repository(hgui, path=self.source_root.encode('utf-8'), create=False)
         except TypeError as err:
-            raise TypeError(f'Unable to initialize Hg: {err}')
-        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
+            raise TypeError(f'Unable to initialize Hg: {err}') from err
+        LOGGER.debug('Matched {}: {}', self.vcs, dirname)
 
     def detect_source_root(self, dirname):
         """Find the top-most source directory"""
         repo_dir = vcsinfo.search_parent_dirs(dirname, '.hg')
         if not repo_dir:
-            raise TypeError("Directory '%s' is not managed by hg" % dirname)
+            raise TypeError(f"Directory '{dirname}' is not managed by hg")
         self.source_root = os.path.dirname(repo_dir)
 
     @property

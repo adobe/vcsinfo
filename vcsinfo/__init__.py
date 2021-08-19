@@ -1,6 +1,11 @@
 """
-Copyright (C) 2014-2020 Adobe
+Copyright 2021 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
+
 from __future__ import print_function
 
 import glob
@@ -97,7 +102,7 @@ class VCS:
         return None
 
     @property
-    # pylint: disable=R0201
+    # pylint: disable=R0201,invalid-name
     def id(self):
         """The native commit identification."""
         return None
@@ -229,7 +234,7 @@ def load_vcs(name, directory, *args, **argv):
         VCSUnsupported: if the vcs module does not support the given directory
         TypeError: if the vcs module does not support the given directory
     """
-    LOGGER.debug(f'Loading VCS module: {name}')
+    LOGGER.debug('Loading VCS module: {}', name)
     vcs_module = __import__('.'.join((__name__, name)), fromlist=[__name__])
     vcs = vcs_module.VCS(directory, *args, **argv)
     return vcs
@@ -264,7 +269,7 @@ def detect_vcss(directory, *args, **argv):
 
             possible_vcs.append(vcs)
         except (VCSUnsupported, TypeError) as err:
-            LOGGER.debug(f'Failed {modname}: {err}')
+            LOGGER.debug('Failed {}: {}', modname, str(err))
             errors.append(str(err))
 
     if not possible_vcs:
@@ -278,12 +283,16 @@ def detect_vcss(directory, *args, **argv):
 
 
 def detect_vcs(directory, *args, **argv):
+    """
+    Detects the VCS type for a given directory.
+    :param directory: the directory to determine the VCS for
+    :return: the VCS type
+    """
     possible_vcss = detect_vcss(directory, *args, **argv)
-    LOGGER.debug(f'Possible VCSs: {possible_vcss}')
+    LOGGER.debug('Possible VCSs: {}', possible_vcss)
 
     if len(possible_vcss) > 1:
-        pvcss = ', '.join([vcs.vcs for vcs in possible_vcss])
-        LOGGER.warning(f'WARNING: multiple VCS matches: {pvcss}')
+        LOGGER.warning('WARNING: multiple VCS matches: {}', ', '.join([vcs.vcs for vcs in possible_vcss]))
 
     return possible_vcss[0]
 
