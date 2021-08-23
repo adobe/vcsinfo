@@ -30,20 +30,20 @@ workflows:
 jobs:
   package:
     docker:
-    - image: cimg/python:3.6
+    - image: cimg/python:3.8
     steps:
     - checkout
+    - run:
+        name: Check pyenv versions
+        command: pyenv versions
     - python/install-packages:
         pkg-manager: pip
     - python/install-packages:
         pkg-manager: pip
         pip-dependency-file: test_requirements.txt
     - run:
-        name: Clear out test reports
-        command: rm -rf test-reports
-    - run:
-        name: Run tests
-        command: pytest --pylint --junitxml=test-reports/test-results.xml
+        name: Run tox
+        command: tox
   pypi-test:
     docker:
     - image: cimg/python:3.6

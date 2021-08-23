@@ -17,9 +17,9 @@ try:
         hg,
         ui,
     )
-except ImportError as err:
+except ImportError as impe:
     # pylint: disable=C0301
-    raise vcsinfo.VCSUnsupported(f'Mercurial VCS module requires mercurial: {err}')
+    raise vcsinfo.VCSUnsupported(f'Mercurial VCS module requires mercurial: {impe}')
 
 
 LOGGER = logging.getLogger(__name__)

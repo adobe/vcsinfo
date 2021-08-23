@@ -1,7 +1,3 @@
-# This is the last version of GitPython that still works with Python 2.7
-GitPython==2.1.8
-# Newer versions of gitdb2 require Python 3.x - not everything has been pulled-up to 3.x
-gitdb2<=2.0.6
-mercurial
-# Provides P4
-p4python
+-e .
+
+#bump2version is used for bumping versions, but not within the application itself

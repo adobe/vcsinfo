@@ -13,3 +13,5 @@ vendor
 .*sw*
 buildrunner.results
 venv
+.tox
+.env

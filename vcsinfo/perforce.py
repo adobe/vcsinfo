@@ -133,7 +133,7 @@ class VCSPerforce(vcsinfo.VCS):
     @property
     def branch(self):
         if not self._branch:
-            self._branch = self._depot_root.split('/')[-1]
+            self._branch = self._depot_root.rsplit('/', maxsplit=1)[-1]
         return self._branch
 
     @property
