@@ -33,6 +33,7 @@ jobs:
     - image: cimg/python:3.6
     steps:
     - checkout
+    - run: pyenv versions
     - python/install-packages:
         pkg-manager: pip
     - python/install-packages:
