@@ -43,6 +43,9 @@ except IOError as err:
     sys.stderr.write(f'Python build requirements must be specified in "{REQ_FILE}": {err}\n')
     sys.exit(err.errno)
 
+with open(join(dirname(__file__), 'README.rst')) as fobj:
+    LONG_DESCRIPTION = fobj.read().strip()
+
 # pylint: disable=C0301
 setup(
     name='vcsinfo',
@@ -52,11 +55,21 @@ setup(
     license='MIT',
     url='https://github.com/adobe/vcsinfo',
     description='Utilities to normalize working with different Version Control Systems',
-    long_description='Utilities to normalize working with different Version Control Systems',
-
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/x-rst',
     packages=find_packages(),
     scripts=[
         'bin/vcsinfo',
     ],
     install_requires=REQUIRES,
+    classifiers=[
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+    ],
 )
