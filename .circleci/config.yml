@@ -30,20 +30,17 @@ workflows:
 jobs:
   package:
     docker:
-    - image: cimg/python:3.8
+    - image: cimg/python:3.6
     steps:
     - checkout
-    - run:
-        name: Install pyenv versions
-        command: pyenv install 3.6.8 && pyenv install 3.7.2
     - python/install-packages:
         pkg-manager: pip
     - python/install-packages:
         pkg-manager: pip
         pip-dependency-file: test_requirements.txt
     - run:
-        name: Run tox
-        command: tox
+        name: Run tests
+        command: pytest --pylint
   pypi-test:
     docker:
     - image: cimg/python:3.6
