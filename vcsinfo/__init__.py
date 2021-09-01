@@ -234,7 +234,7 @@ def load_vcs(name, directory, *args, **argv):
         VCSUnsupported: if the vcs module does not support the given directory
         TypeError: if the vcs module does not support the given directory
     """
-    LOGGER.debug('Loading VCS module: {}', name)
+    LOGGER.debug(f'Loading VCS module: {name}')
     vcs_module = __import__('.'.join((__name__, name)), fromlist=[__name__])
     vcs = vcs_module.VCS(directory, *args, **argv)
     return vcs
@@ -269,7 +269,7 @@ def detect_vcss(directory, *args, **argv):
 
             possible_vcs.append(vcs)
         except (VCSUnsupported, TypeError) as err:
-            LOGGER.debug('Failed {}: {}', modname, str(err))
+            LOGGER.debug(f'Failed {modname}: {err}')
             errors.append(str(err))
 
     if not possible_vcs:
@@ -289,11 +289,11 @@ def detect_vcs(directory, *args, **argv):
     :return: the VCS type
     """
     possible_vcss = detect_vcss(directory, *args, **argv)
-    LOGGER.debug('Possible VCSs: {}', possible_vcss)
+    LOGGER.debug(f'Possible VCSs: {possible_vcss}', possible_vcss)
 
     if len(possible_vcss) > 1:
         possible_vcss_str = ', '.join([vcs.vcs for vcs in possible_vcss])
-        LOGGER.warning('WARNING: multiple VCS matches: {}', possible_vcss_str)
+        LOGGER.warning(f'WARNING: Multiple VCS matches: {possible_vcss_str}')
 
     return possible_vcss[0]
 

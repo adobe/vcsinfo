@@ -60,7 +60,7 @@ class VCSGit(vcsinfo.VCS):
             raise TypeError(
                 f"Directory '{dirname}' is managed by {self.vcs}, but is not the root of the repository"
             )
-        LOGGER.debug('Matched {}: {}', self.vcs, dirname)
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
     @property
     def upstream_repo(self):

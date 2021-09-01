@@ -39,7 +39,7 @@ class VCSHg(vcsinfo.VCS):
             self.vcs_obj = hg.repository(hgui, path=self.source_root.encode('utf-8'), create=False)
         except TypeError as err:
             raise TypeError(f'Unable to initialize Hg: {err}') from err
-        LOGGER.debug('Matched {}: {}', self.vcs, dirname)
+        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
     def detect_source_root(self, dirname):
         """Find the top-most source directory"""
