@@ -292,7 +292,8 @@ def detect_vcs(directory, *args, **argv):
     LOGGER.debug('Possible VCSs: {}', possible_vcss)
 
     if len(possible_vcss) > 1:
-        LOGGER.warning('WARNING: multiple VCS matches: %s', ', '.join([vcs.vcs for vcs in possible_vcss]))
+        possible_vcss_str = ', '.join([vcs.vcs for vcs in possible_vcss])
+        LOGGER.warning('WARNING: multiple VCS matches: {}', possible_vcss_str)
 
     return possible_vcss[0]
 
