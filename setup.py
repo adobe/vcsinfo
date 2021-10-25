@@ -18,19 +18,17 @@ setup(
     description='Utilities to normalize working with different Version Control Systems',
     long_description=long_description,
     long_description_content_type='text/x-rst',
-    packages=find_packages(),
+    packages=find_packages(exclude=("tests",)),
     scripts=[
         'bin/vcsinfo',
     ],
     install_requires=[
-        # This is the last version of GitPython that still works with Python 2.7
-        'GitPython==2.1.8',
-        # Newer versions of gitdb2 require Python 3.x - not everything has been pulled-up to 3.x
-        'gitdb2<=2.0.6',
-        'mercurial',
+        'GitPython<4',
+        'gitdb<5',
     ],
     extras_require={
-        # Perforce is not as common anymore, so make it an optional dependency
+        # Make everything except git an optional dependency
+        'hg': ['mercurial'],
         'p4': ['p4python'],
     },
     classifiers=[

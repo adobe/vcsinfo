@@ -1,0 +1,13 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+[remote "upstream"]
+	url = git@github.com:adobe/vcsinfo-test-git-upstream.git
+	fetch = +refs/heads/*:refs/remotes/upstream/*
+[remote "origin"]
+	url = git@github.com:adobe/vcsinfo-test-git.git
+	fetch = +refs/heads/*:refs/remotes/origin/*

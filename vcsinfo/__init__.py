@@ -6,12 +6,10 @@ NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
 with the terms of the Adobe license agreement accompanying it.
 """
 
-from __future__ import print_function
-
 import glob
 import logging
 import os
-import sys
+from typing import List
 
 
 LOGGER = logging.getLogger(__file__)
@@ -223,7 +221,7 @@ class VCS:
         return f'{self.__class__.__name__}({self.source_root})'
 
 
-def load_vcs(name, directory, *args, **argv):
+def load_vcs(name, directory, *args, **argv) -> VCS:
     """
     Load a specific vcs module for the given directory and arguments.
 
@@ -240,7 +238,7 @@ def load_vcs(name, directory, *args, **argv):
     return vcs
 
 
-def detect_vcss(directory, *args, **argv):
+def detect_vcss(directory, *args, **argv) -> List[VCS]:
     """
     Interrogate the given directory for vcs information, returning an object
     that can be used to obtain information about the current conditions of the
@@ -252,7 +250,6 @@ def detect_vcss(directory, *args, **argv):
     # and list archive.py last.
     vcs_files = glob.glob(os.path.join(vcs_dir, '*.py'))
     possible_vcs = []
-    archive_vcs = None
 
     errors = []
     for modpath in vcs_files:
@@ -265,7 +262,7 @@ def detect_vcss(directory, *args, **argv):
             vcs = load_vcs(modname, directory, *args, **argv)
             if hasattr(vcs, 'is_archive') and vcs.is_archive:
                 # if an "archive" vcs config is present, it always wins
-                return [archive_vcs]
+                return [vcs]
 
             possible_vcs.append(vcs)
         except (VCSUnsupported, TypeError) as err:
@@ -282,7 +279,7 @@ def detect_vcss(directory, *args, **argv):
     return possible_vcs
 
 
-def detect_vcs(directory, *args, **argv):
+def detect_vcs(directory, *args, **argv) -> VCS:
     """
     Detects the VCS type for a given directory.
     :param directory: the directory to determine the VCS for
