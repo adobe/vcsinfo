@@ -39,10 +39,10 @@ def test_git_repo(git_repo_path):
     assert result.name == 'vcsinfo-test-git'
     assert result.branch == 'main'
     assert result.id_short == 'a23bf7'
-    assert result.id_string == 'main-2.Ia23bf7.M1635189626'
-    assert result.modified == 1635189626
+    assert result.id_string == f'main-2.Ia23bf7.M{result.modified}'
+    assert result.modified != 0
     assert result.number == 2
-    assert result.release == '2.Ia23bf7.M1635189626'
+    assert result.release == f'2.Ia23bf7.M{result.modified}'
     assert result.source_root == git_repo_path
     assert result.upstream_repo == 'git@github.com:adobe/vcsinfo-test-git-upstream.git'
     assert result.user == 'saville'
@@ -54,10 +54,10 @@ def test_git_repo(git_repo_path):
         'branch': 'main',
         'id': 'a23bf7e941d6edf95ec1ba3dc2e4999a544c6b5d',
         'id_short': 'a23bf7',
-        'id_string': 'main-2.Ia23bf7.M1635189626',
+        'id_string': f'main-2.Ia23bf7.M{result.modified}',
         'number': 2,
         'user': 'saville',
-        'release': '2.Ia23bf7.M1635189626',
+        'release': f'2.Ia23bf7.M{result.modified}',
     }
     assert result.info(include_files=True)['files'] == ['hello', 'hello2', 'hello3']
     assert result.status() == [
