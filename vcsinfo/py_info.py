@@ -6,8 +6,6 @@ NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
 with the terms of the Adobe license agreement accompanying it.
 """
 
-from __future__ import absolute_import
-
 import email.parser
 import io
 import logging

@@ -15,3 +15,5 @@ buildrunner.results
 venv
 .tox
 .env
+.idea
+
