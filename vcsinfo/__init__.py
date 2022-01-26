@@ -18,6 +18,8 @@ LOGGER = logging.getLogger(__file__)
 class VCSUnsupported(Exception):
     """Custom error signifying a specific VCS is not supported"""
 
+class VCSMissingRevision(Exception):
+    """Custom error signifying a revision is expected but doesn't exist"""
 
 def search_parent_dirs(directory, filename):
     """

@@ -155,7 +155,10 @@ class VCSGit(vcsinfo.VCS):
 
     @property
     def id(self):
-        return self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
+        try:
+            return self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
+        except git.BadName as err:
+            raise vcsinfo.VCSMissingRevision(str(err))
 
     @property
     def id_short(self):
