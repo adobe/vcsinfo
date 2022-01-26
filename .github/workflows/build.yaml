@@ -45,6 +45,9 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: Remove version file
+      # This is just in case something else created it, destroy it to get a fresh version
+      run: rm -f vcsinfo/version.py
     - name: Install wheel
       run: pip install wheel
     - name: Build
@@ -52,8 +55,8 @@ jobs:
     - name: Check upload
       run: pip install twine && twine check dist/*
     - name: Publish to PyPi
-      # Skips publishing on forks/pull requests
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+      # Only publish on pushes to main
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
