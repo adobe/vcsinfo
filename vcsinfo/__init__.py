@@ -255,7 +255,7 @@ def detect_vcss(directory, *args, **argv) -> List[VCS]:
     for modpath in vcs_files:
         modname, _ = os.path.splitext(os.path.basename(modpath))
         # skip things like '__init__.py'
-        if modname.startswith('_'):
+        if modname.startswith('_') or modname == 'version':
             continue
 
         try:
