@@ -11,6 +11,7 @@ SOURCE_DIR = os.path.dirname(
 )
 VCSINFO_DIR = os.path.join(SOURCE_DIR, 'vcsinfo')
 VERSION_FILE = os.path.join(VCSINFO_DIR, 'version.py')
+HEADER_FILE = os.path.join(SOURCE_DIR, '.pylint-license-header')
 
 
 with open(os.path.join(SOURCE_DIR, 'README.rst')) as fobj:
@@ -23,11 +24,11 @@ def get_version():
     """
     if os.path.exists(VERSION_FILE):
         # Read version from file
-        loader = importlib.machinery.SourceFileLoader('buildrunner_version', VERSION_FILE)
+        loader = importlib.machinery.SourceFileLoader('vcsinfo_version', VERSION_FILE)
         version_mod = types.ModuleType(loader.name)
         loader.exec_module(version_mod)
         existing_version = version_mod.__version__  # pylint: disable=no-member
-        print(f'Using existing buildrunner version: {existing_version}')
+        print(f'Using existing vcsinfo version: {existing_version}')
         return existing_version
 
     # Generate the version from the base version and the git commit number, then store it in the file
@@ -51,8 +52,10 @@ def get_version():
 
             # write the version file
             if os.path.exists(VCSINFO_DIR):
+                with open(HEADER_FILE, 'r', encoding='utf8') as fobj:
+                    header = fobj.read()
                 with open(VERSION_FILE, 'w', encoding='utf8') as fobj:
-                    fobj.write("__version__ = '%s'\n" % new_version)
+                    fobj.write(f"{header}\n__version__ = '{new_version}'\n")
             return new_version
     except Exception as exc:
         print(f'Could not generate version from git commits: {exc}')
