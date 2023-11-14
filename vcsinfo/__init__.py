@@ -288,10 +288,10 @@ def detect_vcs(directory, *args, **argv) -> VCS:
     :return: the VCS type
     """
     possible_vcss = detect_vcss(directory, *args, **argv)
-    LOGGER.debug(f'Possible VCSs: {possible_vcss}', possible_vcss)
+    possible_vcss_str = ', '.join([vcs.vcs for vcs in possible_vcss])
+    LOGGER.debug(f'Possible VCSs: {possible_vcss_str}')
 
     if len(possible_vcss) > 1:
-        possible_vcss_str = ', '.join([vcs.vcs for vcs in possible_vcss])
         LOGGER.warning(f'WARNING: Multiple VCS matches: {possible_vcss_str}')
 
     return possible_vcss[0]
