@@ -79,8 +79,8 @@ setup(
         'bin/vcsinfo',
     ],
     install_requires=[
-        'GitPython<4',
-        'gitdb<5',
+        'GitPython>=3',
+        'gitdb>=4',
     ],
     extras_require={
         # Make everything except git an optional dependency
