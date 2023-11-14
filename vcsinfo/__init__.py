@@ -18,8 +18,10 @@ LOGGER = logging.getLogger(__file__)
 class VCSUnsupported(Exception):
     """Custom error signifying a specific VCS is not supported"""
 
+
 class VCSMissingRevision(Exception):
     """Custom error signifying a revision is expected but doesn't exist"""
+
 
 def search_parent_dirs(directory, filename):
     """
@@ -55,6 +57,7 @@ def last_mtime(files, prefix=None):
 
         # NOTE: If the file doesn't exist then return 0, but then make sure a
         # 0 result gets mapped back to None.
+        # pylint: disable=consider-using-generator
         mtime = int(max([
             os.path.exists(fn) and os.stat(fn).st_mtime or 0 for fn in _files
         ])) or None
@@ -96,19 +99,16 @@ class VCS:
         return self._name
 
     @property
-    # pylint: disable=R0201
     def branch(self):
         """The branch name."""
         return None
 
     @property
-    # pylint: disable=R0201,invalid-name
     def id(self):
         """The native commit identification."""
         return None
 
     @property
-    # pylint: disable=R0201
     def user(self):
         """The user who performed the commit (if applicable)."""
         return 'n/a'
@@ -167,7 +167,6 @@ class VCS:
         """
         return str(self.branch) + "-" + str(self.release)
 
-    # pylint: disable=R0201
     def status(self):
         """
         Returns a tuple of lists of modified files in the changeset:

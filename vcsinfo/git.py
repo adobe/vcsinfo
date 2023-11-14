@@ -157,8 +157,8 @@ class VCSGit(vcsinfo.VCS):
     def id(self):
         try:
             return self.vcs_obj.rev_parse(self.vcs_obj.head.name).hexsha
-        except git.BadName as err:
-            raise vcsinfo.VCSMissingRevision(str(err))
+        except git.BadName as exc:
+            raise vcsinfo.VCSMissingRevision(str(exc))
 
     @property
     def id_short(self):
@@ -205,6 +205,7 @@ class VCSGit(vcsinfo.VCS):
                 else:
                     # The commit wasn't found on the branch line where it
                     # is located - unpossible!
+                    # pylint: disable=broad-exception-raised
                     raise Exception(
                         f"Internal error: commit {commit_id} not on commit's branch {branch_name}"
                     )

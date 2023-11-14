@@ -40,7 +40,6 @@ class VCSPyInfo(vcsinfo.VCS):
         self.detect_source_root(_dirname)
         LOGGER.debug(f'Matched {self.vcs}: {dirname}')
 
-
     def detect_source_root(self, dirname):
         '''Identify if a directory might be an .info-info directory.'''
 
@@ -61,10 +60,8 @@ class VCSPyInfo(vcsinfo.VCS):
         except IOError as err:
             raise TypeError(f'Failed reading {sources_txt}: {err}') from err
 
-
     def _get_version(self):
         return self.pkg_info.get('Version')
-
 
     def _match_version(self):
         try:
@@ -74,11 +71,9 @@ class VCSPyInfo(vcsinfo.VCS):
             mobj = self._ver_mobj = re.match(self.VERSION_RE, self._get_version())
         return mobj
 
-
     @property
     def name(self):
         return self.pkg_info.get('Name')
-
 
     @property
     def branch(self):
@@ -89,11 +84,9 @@ class VCSPyInfo(vcsinfo.VCS):
             branch = '0'
         return branch
 
-
     @property
     def user(self):
         return None
-
 
     @property
     def id(self):
@@ -107,11 +100,9 @@ class VCSPyInfo(vcsinfo.VCS):
             ids = '0'
         return ids
 
-
     @property
     def id_short(self):
         return self.id
-
 
     @property
     def number(self):
@@ -122,10 +113,8 @@ class VCSPyInfo(vcsinfo.VCS):
             number = '0'
         return int(number)
 
-
     def list_files(self):
         return self.files
-
 
     @property
     def modified(self):
