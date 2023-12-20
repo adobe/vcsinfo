@@ -28,10 +28,8 @@ jobs:
         python -m pip install --upgrade pip wheel
         pip install -r requirements.txt
         pip install -r test_requirements.txt
-    - name: Lint with pylint
-      run: pylint vcsinfo
-    - name: Check code style with pycodestyle
-      run: pycodestyle vcsinfo
+    - name: Run pre-commit checks
+      run: pre-commit run --all-files
     - name: Test with pytest
       run: pytest --junitxml=test-reports/test-results.xml
     - name: Publish test results
