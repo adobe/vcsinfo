@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 """
-Copyright (C) 2020-2020 Adobe
+Copyright 2023 Adobe
+All Rights Reserved.
+
+NOTICE: Adobe permits you to use, modify, and distribute this file in accordance
+with the terms of the Adobe license agreement accompanying it.
 """
 
 import argparse
@@ -14,7 +18,7 @@ import sys
 import vcsinfo
 
 
-PROC_NAME = 'vcsinfo'
+PROC_NAME = "vcsinfo"
 LOG_NAME = PROC_NAME
 
 
@@ -26,7 +30,7 @@ for _ll_name, _ll_val in zip(LOGLEVEL_NAMES, range(len(LOGLEVEL_NAMES))):
 
 
 def get_logger(loglevel):
-    formatter = logging.Formatter('%(asctime)s %(name)-30s %(levelname)-8s %(message)s')
+    formatter = logging.Formatter("%(asctime)s %(name)-30s %(levelname)-8s %(message)s")
     logger = logging.getLogger(LOG_NAME)
     logger.setLevel(loglevel)
 
@@ -40,7 +44,7 @@ def get_logger(loglevel):
 def loglevel_type(string):
     ll_name = string.upper()
     if ll_name not in LOGLEVEL_LOOKUP:
-        llevel_values = ', '.join(LOGLEVEL_LOOKUP.keys())
+        llevel_values = ", ".join(LOGLEVEL_LOOKUP.keys())
         raise argparse.ArgumentTypeError(
             f'Value "{string}" is not a valid loglevel: {llevel_values}'
         )
@@ -53,32 +57,35 @@ def parse_args(argv):
     """
     parser = argparse.ArgumentParser(
         # pylint: disable=C0301
-        description='vcsinfo returns version control information for the given directory'
+        description="vcsinfo returns version control information for the given directory"
     )
 
-    llevel_values = ', '.join(LOGLEVEL_LOOKUP.keys())
+    llevel_values = ", ".join(LOGLEVEL_LOOKUP.keys())
     parser.add_argument(
-        '-l', '--loglevel',
-        dest='loglevel',
-        help=f'Verbosity of output:  Allowed values are {llevel_values}',
+        "-l",
+        "--loglevel",
+        dest="loglevel",
+        help=f"Verbosity of output:  Allowed values are {llevel_values}",
         type=loglevel_type,
-        default='WARNING',
+        default="WARNING",
     )
 
     parser.add_argument(
-        '-d', '--directory',
+        "-d",
+        "--directory",
         default=os.getcwd(),
-        dest='directory',
+        dest="directory",
         # pylint: disable=C0301
-        help='directory to get info for (defaults to current working directory)',
+        help="directory to get info for (defaults to current working directory)",
     )
 
     parser.add_argument(
-        '-f', '--file-info',
-        action='store_true',
+        "-f",
+        "--file-info",
+        action="store_true",
         default=False,
-        dest='include_files',
-        help='include detailed file information',
+        dest="include_files",
+        help="include detailed file information",
     )
 
     return parser.parse_args(argv)
@@ -91,20 +98,22 @@ def main(argv):
     """
     args = parse_args(argv[1:])
     logger = get_logger(args.loglevel)
-    logger.debug('Startup')
+    logger.debug("Startup")
 
     # pylint: disable=I1101
     vcs = vcsinfo.detect_vcs(args.directory)
-    print(json.dumps(
-        vcs.info(include_files=args.include_files),
-        sort_keys=True,
-        indent=2,
-    ))
+    print(
+        json.dumps(
+            vcs.info(include_files=args.include_files),
+            sort_keys=True,
+            indent=2,
+        )
+    )
 
     return os.EX_OK
 
 
-if '__main__' == __name__:
+if "__main__" == __name__:
     sys.exit(main(sys.argv))
 
 

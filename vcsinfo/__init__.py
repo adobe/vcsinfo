@@ -29,7 +29,7 @@ def search_parent_dirs(directory, filename):
     If found return the full path; otherwise return ''.
     """
 
-    found = ''
+    found = ""
 
     dir_parts = directory.split(os.path.sep)
     while dir_parts:
@@ -58,9 +58,12 @@ def last_mtime(files, prefix=None):
         # NOTE: If the file doesn't exist then return 0, but then make sure a
         # 0 result gets mapped back to None.
         # pylint: disable=consider-using-generator
-        mtime = int(max([
-            os.path.exists(fn) and os.stat(fn).st_mtime or 0 for fn in _files
-        ])) or None
+        mtime = (
+            int(
+                max([os.path.exists(fn) and os.stat(fn).st_mtime or 0 for fn in _files])
+            )
+            or None
+        )
 
     return mtime
 
@@ -81,12 +84,12 @@ class VCS:
         """Base constructor"""
         # Automatically set the VCS engine name
         self.vcs = self.__class__.__name__
-        if self.vcs.startswith('VCS'):
+        if self.vcs.startswith("VCS"):
             self.vcs = self.vcs[3:].lower()
 
-        self.source_root = ''
-        self._name = ''
-        self._upstream_repo = ''
+        self.source_root = ""
+        self._name = ""
+        self._upstream_repo = ""
 
     @property
     def upstream_repo(self):
@@ -111,7 +114,7 @@ class VCS:
     @property
     def user(self):
         """The user who performed the commit (if applicable)."""
-        return 'n/a'
+        return "n/a"
 
     @property
     def id_short(self):
@@ -141,10 +144,12 @@ class VCS:
         file system to stat() to get the removed time!  This means that
         modified can only updated with MODIFIED and ADDED files.
         """
-        return last_mtime(
-            sum(self.status()[ST_MOD:ST_ADD + 1], []),
-            prefix=self.source_root
-        ) or 0
+        return (
+            last_mtime(
+                sum(self.status()[ST_MOD : ST_ADD + 1], []), prefix=self.source_root
+            )
+            or 0
+        )
 
     @property
     def release(self):
@@ -154,9 +159,9 @@ class VCS:
         to the local tree.
         """
         modified = self.modified
-        modstr = f'.M{modified}'
+        modstr = f".M{modified}"
 
-        rel_str = f'{self.number}.I{self.id_short}{modstr}'
+        rel_str = f"{self.number}.I{self.id_short}{modstr}"
 
         return rel_str
 
@@ -187,7 +192,7 @@ class VCS:
         Return a list of files known to the VCS
         (committed + changeset(added, moved) - changeset(deleted))
         """
-        raise NotImplementedError(f'VCS module {self.vcs} must implement list_files()')
+        raise NotImplementedError(f"VCS module {self.vcs} must implement list_files()")
 
     def info(self, include_files=False):
         """
@@ -195,31 +200,31 @@ class VCS:
         information.
         """
         info = {
-            'type': self.vcs,
-            'upstream_repo': self.upstream_repo,
-            'name': self.name,
-            'branch': self.branch,
-            'id': self.id,
-            'id_short': self.id_short,
-            'id_string': self.id_string,
-            'number': self.number,
-            'user': self.user,
-            'release': self.release,
+            "type": self.vcs,
+            "upstream_repo": self.upstream_repo,
+            "name": self.name,
+            "branch": self.branch,
+            "id": self.id,
+            "id_short": self.id_short,
+            "id_string": self.id_string,
+            "number": self.number,
+            "user": self.user,
+            "release": self.release,
         }
 
         if include_files:
-            info['files'] = self.list_files()
+            info["files"] = self.list_files()
             # Do not report UNKNOWN or IGNORED files
             status_info = list(self.status())
             status_info[ST_UNK] = []
             status_info[ST_IGN] = []
-            info['filestatus'] = status_info
+            info["filestatus"] = status_info
 
         return info
 
     def __str__(self):
         """String represenation"""
-        return f'{self.__class__.__name__}({self.source_root})'
+        return f"{self.__class__.__name__}({self.source_root})"
 
 
 def load_vcs(name, directory, *args, **argv) -> VCS:
@@ -233,8 +238,8 @@ def load_vcs(name, directory, *args, **argv) -> VCS:
         VCSUnsupported: if the vcs module does not support the given directory
         TypeError: if the vcs module does not support the given directory
     """
-    LOGGER.debug(f'Loading VCS module: {name}')
-    vcs_module = __import__('.'.join((__name__, name)), fromlist=[__name__])
+    LOGGER.debug(f"Loading VCS module: {name}")
+    vcs_module = __import__(".".join((__name__, name)), fromlist=[__name__])
     vcs = vcs_module.VCS(directory, *args, **argv)
     return vcs
 
@@ -249,32 +254,32 @@ def detect_vcss(directory, *args, **argv) -> List[VCS]:
     vcs_dir = os.path.dirname(__file__)
     # Ignore things that don't look like python modules
     # and list archive.py last.
-    vcs_files = glob.glob(os.path.join(vcs_dir, '*.py'))
+    vcs_files = glob.glob(os.path.join(vcs_dir, "*.py"))
     possible_vcs = []
 
     errors = []
     for modpath in vcs_files:
         modname, _ = os.path.splitext(os.path.basename(modpath))
         # skip things like '__init__.py'
-        if modname.startswith('_') or modname == 'version':
+        if modname.startswith("_") or modname == "version":
             continue
 
         try:
             vcs = load_vcs(modname, directory, *args, **argv)
-            if hasattr(vcs, 'is_archive') and vcs.is_archive:
+            if hasattr(vcs, "is_archive") and vcs.is_archive:
                 # if an "archive" vcs config is present, it always wins
                 return [vcs]
 
             possible_vcs.append(vcs)
         except (VCSUnsupported, TypeError) as err:
-            LOGGER.debug(f'Failed {modname}: {err}')
+            LOGGER.debug(f"Failed {modname}: {err}")
             errors.append(str(err))
 
     if not possible_vcs:
         # pylint: disable=C0301
         message = f'No recognized VCS management of source tree "{directory}" - do you need to login to a VCS?'
         for error in errors:
-            message += f'\n\tWARNING: {error}'
+            message += f"\n\tWARNING: {error}"
         raise VCSUnsupported(message)
 
     return possible_vcs
@@ -287,11 +292,11 @@ def detect_vcs(directory, *args, **argv) -> VCS:
     :return: the VCS type
     """
     possible_vcss = detect_vcss(directory, *args, **argv)
-    possible_vcss_str = ', '.join([vcs.vcs for vcs in possible_vcss])
-    LOGGER.debug(f'Possible VCSs: {possible_vcss_str}')
+    possible_vcss_str = ", ".join([vcs.vcs for vcs in possible_vcss])
+    LOGGER.debug(f"Possible VCSs: {possible_vcss_str}")
 
     if len(possible_vcss) > 1:
-        LOGGER.warning(f'WARNING: Multiple VCS matches: {possible_vcss_str}')
+        LOGGER.warning(f"WARNING: Multiple VCS matches: {possible_vcss_str}")
 
     return possible_vcss[0]
 
@@ -305,19 +310,17 @@ try:
         Override the egg_info command to appropriately set build tags.
         """
 
-        command_name = 'egg_info'
+        command_name = "egg_info"
 
         def tags(self):
-            sourcedir = os.path.dirname(
-                os.path.abspath(self.distribution.script_name)
-            )
+            sourcedir = os.path.dirname(os.path.abspath(self.distribution.script_name))
 
             # first, see if we can get vcs information.
             try:
                 vcs = detect_vcs(sourcedir)
-                tag_build = f'.{vcs.number}'
+                tag_build = f".{vcs.number}"
                 if vcs.modified > 0:
-                    tag_build = f'{tag_build}.{vcs.modified}'
+                    tag_build = f"{tag_build}.{vcs.modified}"
                 return tag_build
             except TypeError:
                 pass

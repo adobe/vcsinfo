@@ -14,7 +14,7 @@ try:
     import git
 except ImportError as err:
     # pylint: disable=C0301
-    raise vcsinfo.VCSUnsupported(f'GIT VCS module requires GitPython: {err}')
+    raise vcsinfo.VCSUnsupported(f"GIT VCS module requires GitPython: {err}")
 
 
 LOGGER = logging.getLogger(__name__)
@@ -26,9 +26,9 @@ class VCSGit(vcsinfo.VCS):
     """
 
     git_to_vcsinfo_status = {
-        'M': vcsinfo.ST_MOD,
-        'A': vcsinfo.ST_ADD,
-        'D': vcsinfo.ST_REM,
+        "M": vcsinfo.ST_MOD,
+        "A": vcsinfo.ST_ADD,
+        "D": vcsinfo.ST_REM,
         # don't know how the below maps
         # '' : vcsinfo.ST_DEL,
         # '' : vcsinfo.ST_UNK,
@@ -51,14 +51,16 @@ class VCSGit(vcsinfo.VCS):
                 # Here is another reason to raise an AssertionError
                 raise AssertionError("No git working_tree_dir")
         except AssertionError as exc:
-            raise TypeError(f"Directory '{dirname}' not a working {self.vcs} checkout") from exc
+            raise TypeError(
+                f"Directory '{dirname}' not a working {self.vcs} checkout"
+            ) from exc
 
         # make sure the git working tree is the same as our directory
         if os.path.abspath(self.source_root) != os.path.abspath(dirname):
             raise TypeError(
                 f"Directory '{dirname}' is managed by {self.vcs}, but is not the root of the repository"
             )
-        LOGGER.debug(f'Matched {self.vcs}: {dirname}')
+        LOGGER.debug(f"Matched {self.vcs}: {dirname}")
 
     @property
     def upstream_repo(self):
@@ -85,7 +87,7 @@ class VCSGit(vcsinfo.VCS):
     @property
     # pylint: disable=R0912
     def branch(self):
-        found_branch = 'DETACHED'
+        found_branch = "DETACHED"
 
         try:
             found_branch = self.vcs_obj.active_branch.name
@@ -95,7 +97,7 @@ class VCSGit(vcsinfo.VCS):
             master_branch = None
 
             for branch in self.vcs_obj.branches:
-                if branch.name == 'master':
+                if branch.name == "master":
                     master_branch = branch
                 else:
                     branches[branch.name] = branch
@@ -105,8 +107,8 @@ class VCSGit(vcsinfo.VCS):
                 if _git_obj.hexsha in commits:
                     return False
                 commits[_git_obj.hexsha] = {
-                    'branch': _branch,
-                    'object': _git_obj,
+                    "branch": _branch,
+                    "object": _git_obj,
                 }
                 return True
 
@@ -146,12 +148,10 @@ class VCSGit(vcsinfo.VCS):
 
     @property
     def user(self):
-        user = ''
+        user = ""
         if self.vcs_obj.heads:
-            user = self.vcs_obj.rev_parse(
-                self.vcs_obj.head.name
-            ).committer.email
-        return user.replace('@adobe.com', '')
+            user = self.vcs_obj.rev_parse(self.vcs_obj.head.name).committer.email
+        return user.replace("@adobe.com", "")
 
     @property
     def id(self):
@@ -217,7 +217,7 @@ class VCSGit(vcsinfo.VCS):
     def status(self):
         status = [[], [], [], [], [], [], []]
 
-        for line in self.vcs_obj.git.status(porcelain=True).split('\n'):
+        for line in self.vcs_obj.git.status(porcelain=True).split("\n"):
             if not line:
                 continue
             (change, filename) = line.split()[0:2]
@@ -225,12 +225,7 @@ class VCSGit(vcsinfo.VCS):
                 status[self.git_to_vcsinfo_status[change]].append(filename)
 
         # pylint: disable=R1718
-        vcs_files = set([
-            fn
-            for fn
-            in self.vcs_obj.git.ls_files().split('\n')
-            if fn
-        ])
+        vcs_files = set([fn for fn in self.vcs_obj.git.ls_files().split("\n") if fn])
 
         clean_files = set(vcs_files)
         clean_files -= set(status[vcsinfo.ST_MOD])
