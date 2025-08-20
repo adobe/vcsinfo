@@ -96,12 +96,10 @@ class VCSPyInfo(vcsinfo.VCS):
     def id(self):
         mobj = self._match_version()
         if mobj:
-            ids = ".".join(
-                (
-                    mobj.groupdict().get("coarse", "0") or "0",
-                    mobj.groupdict().get("number", "0") or "0",
-                )
-            )
+            ids = ".".join((
+                mobj.groupdict().get("coarse", "0") or "0",
+                mobj.groupdict().get("number", "0") or "0",
+            ))
         else:
             ids = "0"
         return ids

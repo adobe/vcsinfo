@@ -15,6 +15,15 @@ Installation
 
     pip install vcsinfo
 
+Development
+###########
+
+For development, use uv to install dependencies:
+
+.. code-block::
+
+    uv sync
+
 Usage
 #####
 
