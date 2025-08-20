@@ -8,7 +8,6 @@ with the terms of the Adobe license agreement accompanying it.
 
 import os
 import shutil
-import tempfile
 
 import pytest
 
@@ -21,14 +20,11 @@ REPO_DIR = os.path.join(os.path.dirname(__file__), "repos/git-repo")
 
 
 @pytest.fixture(name="git_repo_path")
-def fixture_git_repo_path():
-    with tempfile.TemporaryDirectory(suffix="-test-vcsinfo-git") as temp_dir:
-        git_repo_path = os.path.join(temp_dir, "git-repo")
-        shutil.copytree(REPO_DIR, git_repo_path)
-        shutil.move(
-            os.path.join(git_repo_path, "dotgit"), os.path.join(git_repo_path, ".git")
-        )
-        yield git_repo_path
+def fixture_git_repo_path(tmp_path):
+    git_repo_path = tmp_path / "git-repo"
+    shutil.copytree(REPO_DIR, str(git_repo_path))
+    shutil.move(str(git_repo_path / "dotgit"), str(git_repo_path / ".git"))
+    yield str(git_repo_path)
 
 
 def test_git_repo(git_repo_path):
