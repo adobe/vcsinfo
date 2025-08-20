@@ -215,15 +215,6 @@ toml = [
 ]
 
 [[package]]
-name = "ddt"
-version = "1.7.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/51/d4/bdea45c5c1f1f0ae55844d841101b00905c9863ee1004da37d911253abb2/ddt-1.7.2.tar.gz", hash = "sha256:d215d6b083963013c4a19b1e4dcd6a96e80e43ab77519597a6acfcf2e9a3e04b", size = 13673, upload-time = "2024-02-26T01:36:33.737Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/61/7c/38d1aec205833096eddefcbb3492fbb2c886e74174c72bc160da9522b2f0/ddt-1.7.2-py2.py3-none-any.whl", hash = "sha256:6adcfaf9785f0a36f9e73a89b91e412de9ef8649e289b750e3683bc79d5e2354", size = 7065, upload-time = "2024-02-26T01:36:32.45Z" },
-]
-
-[[package]]
 name = "distlib"
 version = "0.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -282,29 +273,17 @@ wheels = [
 ]
 
 [[package]]
-name = "gitdb2"
-version = "2.0.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "smmap2" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c5/62/ed7205331e8d7cc377e2512cb32f8f8f075c0defce767551d0a76e102ce2/gitdb2-2.0.6.tar.gz", hash = "sha256:1b6df1433567a51a4a9c1a5a0de977aa351a405cc56d7d35f3388bad1f630350", size = 393597, upload-time = "2019-09-28T11:32:21.332Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/6c/99296f89bad2ef85626e1df9f677acbee8885bb043ad82ad3ed4746d2325/gitdb2-2.0.6-py2.py3-none-any.whl", hash = "sha256:96bbb507d765a7f51eb802554a9cfe194a174582f772e0d89f4e87288c288b7b", size = 63964, upload-time = "2019-09-28T11:32:16.305Z" },
-]
-
-[[package]]
 name = "gitpython"
-version = "3.0.0"
+version = "3.1.45"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "ddt" },
     { name = "gitdb" },
-    { name = "gitdb2" },
+    { name = "typing-extensions", version = "4.13.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "typing-extensions", version = "4.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/da/87/9dbf6d3d2a10c41a6c2fc3d32255fff3413e1ce197997a7ba9d5578d4f0d/GitPython-3.0.0.tar.gz", hash = "sha256:629867ebf609cef21bb9d849039e281e25963fb7d714a2f6bacc1ecce4800293", size = 431467, upload-time = "2019-08-12T03:19:40.034Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9a/c8/dd58967d119baab745caec2f9d853297cec1989ec1d63f677d3880632b88/gitpython-3.1.45.tar.gz", hash = "sha256:85b0ee964ceddf211c41b9f27a49086010a190fd8132a24e21f362a4b36a791c", size = 215076, upload-time = "2025-07-24T03:45:54.871Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/45/f6/b44846937803bfa63eb5c2aaaffe0d1d424365c3122761bc3c4de45aec3a/GitPython-3.0.0-py3-none-any.whl", hash = "sha256:556b64796c5e268b35e3b431a429e813ad54aa178e1baaec2a9ba82e8575a89e", size = 452909, upload-time = "2019-08-12T03:19:35.029Z" },
+    { url = "https://files.pythonhosted.org/packages/01/61/d4b89fec821f72385526e1b9d9a3a0385dda4a72b206d28049e2c7cd39b8/gitpython-3.1.45-py3-none-any.whl", hash = "sha256:8908cb2e02fb3b93b7eb0f2827125cb699869470432cc885f019b8fd0fccff77", size = 208168, upload-time = "2025-07-24T03:45:52.517Z" },
 ]
 
 [[package]]
@@ -811,18 +790,6 @@ wheels = [
 ]
 
 [[package]]
-name = "smmap2"
-version = "3.0.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "smmap" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/88/77/b1542b654fa594580fa82a1e0af4bf81074323d272a50a838c943e3de7b4/smmap2-3.0.1.tar.gz", hash = "sha256:44cc8bdaf96442dbb9a8e2e14377d074b3d0eea292eee3c95c8c449b6c92c557", size = 947, upload-time = "2020-02-23T14:46:56.73Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3e/11/2dae3df2f19c43e156cce8e02c0080b46821faf816b839a2023ef7b6b84f/smmap2-3.0.1-py3-none-any.whl", hash = "sha256:0cb6ea470b1ad9a65a02ca7f4c7ae601861f7dd24a43812ca51cfca2892bb524", size = 1133, upload-time = "2020-02-23T14:46:55.513Z" },
-]
-
-[[package]]
 name = "tomli"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -918,7 +885,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "gitdb", specifier = ">=4" },
-    { name = "gitpython", specifier = ">=3" },
+    { name = "gitpython", specifier = ">=3.1" },
     { name = "mercurial", marker = "extra == 'hg'" },
     { name = "p4python", marker = "extra == 'p4'" },
 ]
