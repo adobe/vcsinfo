@@ -15,6 +15,5 @@ buildrunner.results
 venv
 .tox
 .env
+.venv
 .idea
-
-vcsinfo/version.py
